@@ -14,8 +14,6 @@ export default function App() {
   const [selectedEvent, setSelectedEvent] = useState(null)
   const [showEventForm, setShowEventForm] = useState(false)
   const [showEventItemForm, setShowEventItemForm] = useState(false)
-  const [itemName, setItemName] = useState("")
-  const [itemLocation, setItemLocation] = useState("")
   const [eventItemName, setEventItemName] = useState("")
   const [eventItemLocation, setEventItemLocation] = useState("")
   const [eventName, setEventName] = useState("")
@@ -31,12 +29,6 @@ export default function App() {
   const formatDate = value => value ? new Date(`${value}T12:00:00`).toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" }) : ""
   const today = new Date().toISOString().slice(0, 10)
   const todayEvents = events.filter(event => event.date === today || repeatDays.includes(new Date().toLocaleDateString([], { weekday: "long" })))
-
-  function addItem() {
-    if (!itemName.trim() || !itemLocation.trim()) return
-    setItems(current => [...current, { id: Date.now(), eventId: null, name: itemName.trim(), location: itemLocation.trim(), grabbed: false }])
-    setItemName(""); setItemLocation("")
-  }
 
   function addItemToEvent() {
     if (!selectedEvent || !eventItemName.trim() || !eventItemLocation.trim()) return
