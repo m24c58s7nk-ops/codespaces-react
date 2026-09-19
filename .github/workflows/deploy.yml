@@ -38,41 +38,40 @@ jobs:
         run: |
           cat >> src/App.css <<'EOF'
 
-          /* Final iPad/Safari form overflow fix */
+          /* Final form containment fix: avoid Safari native control overflow */
           .event-form {
             width: 100% !important;
             max-width: 100% !important;
             min-width: 0 !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
             overflow: hidden !important;
           }
 
-          .event-form,
           .event-form *,
           .event-form label,
           .event-form input,
           .event-form textarea,
           .time-grid,
-          .time-grid label,
-          .time-grid input {
+          .time-grid label {
             box-sizing: border-box !important;
             min-width: 0 !important;
-            min-inline-size: 0 !important;
+            width: 100% !important;
             max-width: 100% !important;
-            max-inline-size: 100% !important;
           }
 
           .event-form input,
           .event-form textarea {
             display: block !important;
-            width: 100% !important;
             inline-size: 100% !important;
+            max-inline-size: 100% !important;
           }
 
+          /* Stack the time fields so neither native iPad control can escape. */
           .time-grid {
-            display: grid !important;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-            width: 100% !important;
-            gap: 10px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0 !important;
           }
 
           .event-form input[type="date"],
@@ -80,6 +79,7 @@ jobs:
             appearance: none !important;
             -webkit-appearance: none !important;
             font-size: 16px !important;
+            min-inline-size: 0 !important;
           }
           EOF
 
