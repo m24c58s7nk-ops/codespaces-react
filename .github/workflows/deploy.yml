@@ -30,17 +30,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Repair missing App.jsx closing parenthesis
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path("src/App.jsx")
-          text = path.read_text()
-          stripped = text.rstrip()
-          if stripped.endswith("</main>"):
-              path.write_text(stripped + "\n)\n")
-          PY
-
       - name: Build
         run: npm run build
 
