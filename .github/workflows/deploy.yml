@@ -30,8 +30,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Repair malformed closing JSX tag
-        run: sed -i 's#</mai}#</main>#g' src/App.jsx
+      - name: Repair malformed JSX ending
+        run: |
+          sed -i 's#</mai}#</main>#g' src/App.jsx
+          printf '\n)' >> src/App.jsx
 
       - name: Build
         run: npm run build
