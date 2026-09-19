@@ -19,6 +19,7 @@ body {
   font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background: radial-gradient(circle at top left, #f0edff 0, #f7f8fc 34%, #eef2f8 100%);
   color: var(--ink);
+  overflow-x: hidden;
 }
 button, input, textarea { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; cursor: pointer; }
@@ -64,21 +65,22 @@ h1 { margin: 0; font-size: clamp(38px, 8vw, 54px); line-height: 1; letter-spacin
 .add-event-button, .auth-secondary, .auth-guest { width: 100%; margin-top: 11px; padding: 14px; border: 1px solid #dedff3; border-radius: 15px; background: rgba(255,255,255,.62); color: var(--purple); font-weight: 700; }
 .add-event-button:hover, .auth-secondary:hover, .auth-guest:hover { background: var(--purple-soft); }
 
-.event-form { margin-bottom: 38px; padding: 25px; border: 1px solid var(--line); border-radius: 23px; background: rgba(255,255,255,.96); box-shadow: 0 15px 40px rgba(35,44,80,.07); }
+.event-form { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; margin-bottom: 38px; padding: 25px; border: 1px solid var(--line); border-radius: 23px; background: rgba(255,255,255,.96); box-shadow: 0 15px 40px rgba(35,44,80,.07); }
 .form-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
 .form-header h2 { margin: 0; font-size: 24px; }
 .close-button { width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--soft); color: var(--muted); font-size: 22px; }
-.event-form > input, .event-form > textarea, .event-form label input, .add-section input, .auth-card input { width: 100%; min-width: 0; padding: 14px 15px; border: 1px solid #dfe3ee; border-radius: 13px; background: #fafbfe; color: var(--ink); }
+.event-form > input, .event-form > textarea, .event-form label input, .add-section input, .auth-card input { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 14px 15px; border: 1px solid #dfe3ee; border-radius: 13px; background: #fafbfe; color: var(--ink); }
 .event-form > input, .event-form > textarea { margin-bottom: 11px; }
-.event-form label { display: block; margin-bottom: 11px; color: #69738a; font-size: 12px; font-weight: 700; }
-.event-form label input { display: block; margin-top: 6px; }
+.event-form label { display: block; width: 100%; max-width: 100%; min-width: 0; margin-bottom: 11px; color: #69738a; font-size: 12px; font-weight: 700; }
+.event-form label input { margin-top: 6px; }
 .event-form textarea { min-height: 95px; resize: vertical; }
 .event-form input:focus, .event-form textarea:focus, .add-section input:focus, .auth-card input:focus { border-color: #8d83f4; background: white; box-shadow: 0 0 0 4px #eeecff; outline: none; }
-.time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.time-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 11px; min-width: 0; width: 100%; }
+.time-grid label { min-width: 0; }
 .repeat-section { margin: 18px 0 14px; padding: 17px 0 4px; border-top: 1px solid var(--line); }
 .repeat-header { display: flex; justify-content: space-between; margin-bottom: 12px; color: #69738a; font-size: 12px; font-weight: 800; }
 .clear-repeat { border: 0; background: transparent; color: var(--purple); font-size: 12px; font-weight: 700; }
-.day-picker { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; }
+.day-picker { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 7px; }
 .day-button { aspect-ratio: 1; border: 1px solid #dfe3ee; border-radius: 50%; background: white; color: #7d879d; font-weight: 700; }
 .day-button.selected { border-color: var(--purple); background: var(--purple); color: white; box-shadow: 0 5px 12px rgba(101,87,232,.22); }
 .repeat-help { margin: 10px 0 0; color: #9aa2b4; font-size: 11px; }
