@@ -596,4 +596,4 @@ export default function App() {
           Add item
         </button>
       </section>
-    </mai}
+    </main>
