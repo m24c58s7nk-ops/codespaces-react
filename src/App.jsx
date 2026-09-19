@@ -68,7 +68,7 @@ export default function App() {
         <section className="event-items">
           <div className="section-heading"><h2>Items to bring</h2><span>{eventItems.length}</span></div>
           <button className="add-button" onClick={() => setShowEventItemForm(value => !value)}>+ Add item</button>
-          {showEventItemForm && <section className="item-form"><input placeholder="What do you need?" value={eventItemName} onChange={e => setEventItemName(e.target.value)} /><input placeholder="Where is it?" value={eventItemLocation} onChange={e => setEventItemLocation(e.target.value)} /><button className="add-button" onClick={addItemToEvent}>Add item to this event</button></section>}
+          {showEventItemForm && <section className="add-section item-form"><h2>Add an item</h2><input placeholder="What do you need?" value={eventItemName} onChange={e => setEventItemName(e.target.value)} /><input placeholder="Where is it?" value={eventItemLocation} onChange={e => setEventItemLocation(e.target.value)} /><button className="add-button" onClick={addItemToEvent}>Add item to this event</button></section>}
           {eventItems.length === 0 ? <div className="event-empty">No items added yet.</div> : <div className="items-list">{eventItems.map(item => <div className="item-row" key={item.id}><button className={`item-row ${item.grabbed ? "grabbed" : ""}`} onClick={() => toggleItem(item.id)}><span className="check">{item.grabbed ? "✓" : ""}</span><span className="item-info"><strong>{item.name}</strong><span>{item.location}</span></span><span className="arrow">›</span></button><button className="delete-action" onClick={() => removeItem(item.id)}>Delete</button></div>)}</div>}
         </section>
       </section>
