@@ -38,34 +38,48 @@ jobs:
         run: |
           cat >> src/App.css <<'EOF'
 
-          /* Mobile overflow protection for the event form */
+          /* Final iPad/Safari form overflow fix */
+          .event-form {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
+          }
+
           .event-form,
           .event-form *,
           .event-form label,
           .event-form input,
           .event-form textarea,
           .time-grid,
-          .time-grid label {
-            min-width: 0;
-            max-width: 100%;
+          .time-grid label,
+          .time-grid input {
+            box-sizing: border-box !important;
+            min-width: 0 !important;
+            min-inline-size: 0 !important;
+            max-width: 100% !important;
+            max-inline-size: 100% !important;
           }
 
           .event-form input,
           .event-form textarea {
-            display: block;
-            width: 100%;
-            inline-size: 100%;
-            box-sizing: border-box;
+            display: block !important;
+            width: 100% !important;
+            inline-size: 100% !important;
           }
 
-          .event-form label {
-            overflow: hidden;
+          .time-grid {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+            width: 100% !important;
+            gap: 10px !important;
           }
 
           .event-form input[type="date"],
           .event-form input[type="time"] {
-            appearance: none;
-            -webkit-appearance: none;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            font-size: 16px !important;
           }
           EOF
 
