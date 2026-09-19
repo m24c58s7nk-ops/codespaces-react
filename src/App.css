@@ -42,12 +42,12 @@ h1 { margin: 0; font-size: clamp(38px, 8vw, 54px); line-height: 1; letter-spacin
 .add-event-button:hover, .auth-secondary:hover, .auth-guest:hover { background: var(--purple-soft); }
 .event-form { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; margin-bottom: 38px; padding: 25px; border: 1px solid var(--line); border-radius: 23px; background: rgba(255,255,255,.96); box-shadow: 0 15px 40px rgba(35,44,80,.07); }
 .event-form h2 { margin: 0 0 18px; font-size: 24px; }
-.event-form > input, .event-form > textarea, .event-form label input, .add-section input, .auth-card input { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 14px 15px; border: 1px solid #dfe3ee; border-radius: 13px; background: #fafbfe; color: var(--ink); }
-.event-form > input, .event-form > textarea { margin-bottom: 11px; }
+.event-form > input, .event-form > textarea, .event-form label input, .add-section input, .item-form input, .auth-card input { display: block; width: 100%; max-width: 100%; min-width: 0; padding: 14px 15px; border: 1px solid #dfe3ee; border-radius: 13px; background: #fafbfe; color: var(--ink); }
+.event-form > input, .event-form > textarea, .item-form input { margin-bottom: 11px; }
 .event-form label { display: block; width: 100%; max-width: 100%; min-width: 0; margin-bottom: 11px; color: #69738a; font-size: 12px; font-weight: 700; }
 .event-form label input { margin-top: 6px; }
 .event-form textarea { min-height: 95px; resize: vertical; }
-.event-form input:focus, .event-form textarea:focus, .add-section input:focus, .auth-card input:focus { border-color: #8d83f4; background: white; box-shadow: 0 0 0 4px #eeecff; outline: none; }
+.event-form input:focus, .event-form textarea:focus, .add-section input:focus, .item-form input:focus, .auth-card input:focus { border-color: #8d83f4; background: white; box-shadow: 0 0 0 4px #eeecff; outline: none; }
 .time-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 11px; min-width: 0; width: 100%; }
 .add-button { width: 100%; padding: 15px 18px; border: 0; border-radius: 14px; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: white; font-weight: 800; box-shadow: 0 9px 20px rgba(101,87,232,.22); transition: transform .18s, box-shadow .18s; }
 .add-button:hover { transform: translateY(-1px); box-shadow: 0 12px 25px rgba(101,87,232,.3); }
@@ -64,9 +64,9 @@ h1 { margin: 0; font-size: clamp(38px, 8vw, 54px); line-height: 1; letter-spacin
 .delete-action { flex: 0 0 76px; align-self: stretch; border: 0; background: #fff0f1; color: #c34f5d; font-size: 12px; font-weight: 800; }
 .delete-action:hover { background: var(--danger); color: white; }
 .empty-state, .event-empty { padding: 30px 24px; text-align: center; border: 1px dashed #cfd5e5; border-radius: 19px; background: rgba(255,255,255,.55); color: var(--muted); }
-.add-section { margin-top: 38px; }
-.add-section h2 { margin-bottom: 14px; }
-.add-section input { margin-bottom: 11px; background: rgba(255,255,255,.82); }
+.add-section, .item-form { margin-top: 38px; }
+.add-section h2, .item-form h2 { margin-bottom: 14px; }
+.add-section input, .item-form input { margin-bottom: 11px; background: rgba(255,255,255,.82); }
 .back-button { padding: 0; margin-bottom: 26px; border: 0; background: transparent; color: var(--purple); font-weight: 800; }
 .event-detail { padding-bottom: 20px; }
 .event-icon { width: 56px; height: 56px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 18px; background: var(--purple-soft); color: var(--purple); }
