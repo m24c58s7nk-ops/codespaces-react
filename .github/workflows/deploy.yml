@@ -34,6 +34,41 @@ jobs:
         run: |
           printf '\n  )\n}\n' >> src/App.jsx
 
+      - name: Fix mobile form sizing
+        run: |
+          cat >> src/App.css <<'EOF'
+
+          /* Mobile overflow protection for the event form */
+          .event-form,
+          .event-form *,
+          .event-form label,
+          .event-form input,
+          .event-form textarea,
+          .time-grid,
+          .time-grid label {
+            min-width: 0;
+            max-width: 100%;
+          }
+
+          .event-form input,
+          .event-form textarea {
+            display: block;
+            width: 100%;
+            inline-size: 100%;
+            box-sizing: border-box;
+          }
+
+          .event-form label {
+            overflow: hidden;
+          }
+
+          .event-form input[type="date"],
+          .event-form input[type="time"] {
+            appearance: none;
+            -webkit-appearance: none;
+          }
+          EOF
+
       - name: Build
         run: npm run build
 
