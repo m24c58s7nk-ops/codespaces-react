@@ -30,6 +30,51 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Add event-specific item assignment
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("src/App.jsx")
+          text = path.read_text()
+
+          text = text.replace(
+              '  const [itemLocation, setItemLocation] = useState("")\n',
+              '  const [itemLocation, setItemLocation] = useState("")\n  const [selectedItemEventId, setSelectedItemEventId] = useState("")\n'
+          )
+
+          text = text.replace(
+              '  function addItem() {',
+              '  function addItem() {'
+          )
+
+          text = text.replace(
+              '        location: itemLocation.trim(),\n        grabbed: false',
+              '        location: itemLocation.trim(),\n        eventId: selectedItemEventId ? Number(selectedItemEventId) : null,\n        grabbed: false'
+          )
+
+          text = text.replace(
+              '    setItemLocation("")\n  }\n\n  function toggleItem',
+              '    setItemLocation("")\n    setSelectedItemEventId("")\n  }\n\n  function toggleItem'
+          )
+
+          text = text.replace(
+              '              <span>{items.length}</span>\n            </div>\n\n            {items.length === 0 ? (',
+              '              <span>{items.filter(item => item.eventId === selectedEvent.id).length}</span>\n            </div>\n\n            {items.filter(item => item.eventId === selectedEvent.id).length === 0 ? ('
+          )
+
+          text = text.replace(
+              '                {items.map((item, index) => (',
+              '                {items.filter(item => item.eventId === selectedEvent.id).map((item, index) => (',
+              1
+          )
+
+          marker = '''        <input\n          type="text"\n          placeholder="Where is it usually?"'''
+          replacement = '''        <label className="item-event-label">\n          Bring to this event\n          <select\n            value={selectedItemEventId}\n            onChange={e => setSelectedItemEventId(e.target.value)}\n          >\n            <option value="">Choose an event</option>\n            {events.map(event => (\n              <option key={event.id} value={event.id}>\n                {event.name} — {formatEventDate(event.date)}\n              </option>\n            ))}\n          </select>\n        </label>\n\n''' + marker
+          text = text.replace(marker, replacement)
+
+          path.write_text(text)
+          PY
+
       - name: Repair missing App.jsx component closure
         run: |
           printf '\n  )\n}\n' >> src/App.jsx
@@ -67,7 +112,6 @@ jobs:
             max-inline-size: 100% !important;
           }
 
-          /* Stack the time fields so neither native iPad control can escape. */
           .time-grid {
             display: flex !important;
             flex-direction: column !important;
