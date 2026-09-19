@@ -30,6 +30,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Repair missing App.jsx component closure
+        run: |
+          printf '\n  )\n}\n' >> src/App.jsx
+
       - name: Build
         run: npm run build
 
