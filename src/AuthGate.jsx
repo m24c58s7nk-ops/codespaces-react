@@ -5,13 +5,9 @@ import AuthScreen from "./AuthScreen"
 const SESSION_KEY = "paratus_demo_session"
 
 export default function AuthGate() {
-  const [session, setSession] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(SESSION_KEY) || "null")
-    } catch {
-      return null
-    }
-  })
+  // Always show the login screen when the website is opened.
+  // After the user logs in or continues as a guest, show the app.
+  const [session, setSession] = useState(null)
 
   function signIn(account) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(account))
