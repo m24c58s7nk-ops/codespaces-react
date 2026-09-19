@@ -40,16 +40,16 @@ h1 { margin: 0; font-size: clamp(38px, 8vw, 54px); line-height: 1; letter-spacin
 .arrow { flex-shrink: 0; color: #8d86df; font-size: 27px; line-height: 1; }
 .add-event-button, .auth-secondary, .auth-guest { width: 100%; margin-top: 11px; padding: 14px; border: 1px solid #dedff3; border-radius: 15px; background: rgba(255,255,255,.62); color: var(--purple); font-weight: 700; }
 .add-event-button:hover, .auth-secondary:hover, .auth-guest:hover { background: var(--purple-soft); }
-.event-form { width: 100%; max-width: 100%; min-width: 0; overflow: hidden; margin-bottom: 38px; padding: 25px; border: 1px solid var(--line); border-radius: 23px; background: rgba(255,255,255,.96); box-shadow: 0 15px 40px rgba(35,44,80,.07); }
+.event-form { width: 100%; max-width: 100%; min-width: 0; overflow: visible; margin-bottom: 38px; padding: 25px; border: 1px solid var(--line); border-radius: 23px; background: rgba(255,255,255,.96); box-shadow: 0 15px 40px rgba(35,44,80,.07); }
 .event-form h2 { margin: 0 0 18px; font-size: 24px; }
 .event-form > input, .event-form > textarea, .event-form label input, .add-section input, .item-form input, .auth-card input { display: block; width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; padding: 14px 15px; border: 1px solid #dfe3ee; border-radius: 13px; background: #fafbfe; color: var(--ink); }
 .event-form > input, .event-form > textarea, .item-form input { margin-bottom: 11px; }
-.event-form label { display: block; width: 100%; max-width: 100%; min-width: 0; overflow: hidden; margin-bottom: 11px; color: #69738a; font-size: 12px; font-weight: 700; }
-.event-form label input { margin-top: 6px; }
+.event-form label { display: block; width: 100%; max-width: 100%; min-width: 0; overflow: visible; margin-bottom: 11px; color: #69738a; font-size: 12px; font-weight: 700; }
+.event-form label input { margin-top: 6px; width: calc(100% - 1px); }
 .event-form input:focus, .event-form textarea:focus, .add-section input:focus, .item-form input:focus, .auth-card input:focus { border-color: #8d83f4; background: white; box-shadow: 0 0 0 4px #eeecff; outline: none; }
 .time-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 11px; min-width: 0; width: 100%; }
 .time-grid label { min-width: 0; }
-.time-grid input, .event-form input[type='date'], .event-form input[type='time'] { min-width: 0; width: 100%; max-width: 100%; }
+.time-grid input, .event-form input[type='date'], .event-form input[type='time'] { min-width: 0; width: calc(100% - 1px); max-width: calc(100% - 1px); }
 .add-button { width: 100%; padding: 15px 18px; border: 0; border-radius: 14px; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: white; font-weight: 800; box-shadow: 0 9px 20px rgba(101,87,232,.22); transition: transform .18s, box-shadow .18s; }
 .add-button:hover { transform: translateY(-1px); box-shadow: 0 12px 25px rgba(101,87,232,.3); }
 .items-list { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 19px; background: white; box-shadow: 0 7px 22px rgba(36,44,75,.035); }
