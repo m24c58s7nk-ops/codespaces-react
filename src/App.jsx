@@ -141,6 +141,7 @@ function App() {
   const [servings, setServings] = useState(2);
   const [commentText, setCommentText] = useState("");
   const [showInstall, setShowInstall] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => load("tablely-dark-mode", false));
   const [newRecipe, setNewRecipe] = useState({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
   
   const categories = ["All","Breakfast","Lunch","Dinner"];
@@ -217,7 +218,7 @@ function App() {
       <header className="topbar">
         <button className="brand" onClick={()=>setView("home")}><span className="brand-mark">✦</span><span>Table<span className="brand-accent">ly</span></span></button>
         <div className="desktop-search"><span>⌕</span><input value={search} onChange={e=>{setSearch(e.target.value);setView("explore")}} placeholder="Search recipes, ingredients..." /></div>
-        <button className="install-btn" onClick={()=>setShowInstall(true)}>Install App</button>
+        <button className="theme-btn" onClick={() => { const next = !darkMode; setDarkMode(next); save("tablely-dark-mode", next); }} aria-label="Toggle dark mode">{darkMode ? "☀" : "☾"}</button><button className="install-btn" onClick={()=>setShowInstall(true)}>Install App</button>
       </header>
 
       {view==="home" && <main className="home-page">
