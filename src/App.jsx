@@ -134,6 +134,7 @@ function App() {
   const [category, setCategory] = useState("All");
   const [timeFilter, setTimeFilter] = useState("Any");
   const [difficultyFilter, setDifficultyFilter] = useState("Any");
+  const [dietFilter, setDietFilter] = useState("All");
   const [sortFilter, setSortFilter] = useState("Recommended");
   const [showFilters, setShowFilters] = useState(false);
   const [servings, setServings] = useState(2);
@@ -150,13 +151,19 @@ function App() {
       const matchesCategory = category === "All" || r.category === category;
       const matchesTime = timeFilter === "Any" || (timeFilter === "15 min or less" ? r.time <= 15 : timeFilter === "30 min or less" ? r.time <= 30 : r.time <= 60);
       const matchesDifficulty = difficultyFilter === "Any" || r.difficulty === difficultyFilter;
-      return matchesText && matchesCategory && matchesTime && matchesDifficulty;
+      const ingredientText = (r.ingredients || []).map(i => (i.n || "").toLowerCase()).join(" ");
+      const meatWords = /chicken|beef|pork|turkey|bacon|ham|sausage|salmon|tuna|shrimp|fish|meat|anchovy|gelatin|lamb|steak|prosciutto/.test(ingredientText);
+      const animalProductWords = /milk|cream|cheese|parmesan|feta|yogurt|butter|egg|honey|whey|mozzarella|ghee|mayonnaise|mayo/.test(ingredientText);
+      const isVegetarian = !meatWords;
+      const isVegan = !meatWords && !animalProductWords;
+      const matchesDiet = dietFilter === "All" || (dietFilter === "Vegetarian" ? isVegetarian : isVegan);
+      return matchesText && matchesCategory && matchesTime && matchesDifficulty && matchesDiet;
     });
     if (sortFilter === "Rating") result.sort((a,b)=>(b.rating||0)-(a.rating||0));
     if (sortFilter === "Quickest") result.sort((a,b)=>a.time-b.time);
     if (sortFilter === "Newest") result.sort((a,b)=>b.id.localeCompare(a.id));
     return result;
-  }, [recipes, search, category, timeFilter, difficultyFilter, sortFilter]);
+  }, [recipes, search, category, timeFilter, difficultyFilter, dietFilter, sortFilter]);
 
   const suggestions = useMemo(() => recipes.filter(r => !favorites.includes(r.id)).slice(0,4), [recipes, favorites]);
   const selectedRecipe = recipes.find(r => r.id === selected);
@@ -218,8 +225,9 @@ function App() {
         {showFilters && <div className="filter-panel">
           <label>Cooking time<select value={timeFilter} onChange={e=>setTimeFilter(e.target.value)}><option>Any</option><option>15 min or less</option><option>30 min or less</option><option>60 min or less</option></select></label>
           <label>Difficulty<select value={difficultyFilter} onChange={e=>setDifficultyFilter(e.target.value)}><option>Any</option><option>Easy</option><option>Medium</option><option>Hard</option></select></label>
+          <label>Diet<select value={dietFilter} onChange={e=>setDietFilter(e.target.value)}><option>All</option><option>Vegetarian</option><option>Vegan</option></select></label>
           <label>Sort by<select value={sortFilter} onChange={e=>setSortFilter(e.target.value)}><option>Recommended</option><option>Rating</option><option>Quickest</option><option>Newest</option></select></label>
-          <button className="clear-filters" onClick={()=>{setCategory("All");setTimeFilter("Any");setDifficultyFilter("Any");setSortFilter("Recommended");setSearch("");}}>Clear all</button>
+          <button className="clear-filters" onClick={()=>{setCategory("All");setTimeFilter("Any");setDifficultyFilter("Any");setDietFilter("All");setSortFilter("Recommended");setSearch("");}}>Clear all</button>
         </div>}
         <RecipeGrid recipes={filtered} onOpen={id=>{setSelected(id);setServings(recipes.find(r=>r.id===id).servings);setView("recipe")}} favorites={favorites} onFavorite={toggleFavorite}/>
       </main>}
