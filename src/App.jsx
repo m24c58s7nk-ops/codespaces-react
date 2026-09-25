@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 const starterRecipes = [
   {
     id: "r1", title: "Creamy Tuscan Pasta", category: "Dinner", time: 30, difficulty: "Easy", servings: 2,
+    story: "Legend has it that this pasta began in a tiny kitchen in Tuscany, where a home cook was trying to turn a handful of tomatoes, spinach, and leftover cream into dinner for unexpected guests. The dish became a family favorite, eventually making its way onto neighborhood tables. Tablely's version keeps that same cozy, make-it-tonight spirit.",
     rating: 4.8, ratingCount: 126, author: "Kitchen Collective",
     image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
     description: "Silky pasta with garlic, spinach, tomatoes, and Parmesan.",
@@ -12,6 +13,7 @@ const starterRecipes = [
   },
   {
     id: "r2", title: "Crispy Honey Chicken", category: "Dinner", time: 35, difficulty: "Medium", servings: 4,
+    story: "This recipe was inspired by the kind of weeknight dinner that disappears from the table before anyone remembers to take a photo. Mia's Kitchen imagined a simple honey glaze that could turn golden chicken into something special without making dinner complicated. The sweet-and-tangy sauce became the signature.",
     rating: 4.9, ratingCount: 208, author: "Mia's Kitchen",
     image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
     description: "Golden chicken glazed with a sweet, tangy honey sauce.",
@@ -21,6 +23,7 @@ const starterRecipes = [
   },
   {
     id: "r3", title: "Berry Breakfast Bowl", category: "Breakfast", time: 10, difficulty: "Easy", servings: 1,
+    story: "The breakfast bowl has roots in the sunny idea that breakfast should feel like a fresh start. Fresh Start's original version was assembled from whatever berries and fruit were in season, with yogurt and granola added for crunch. It became a morning ritual because it takes only a few minutes but still feels like a little celebration.",
     rating: 4.7, ratingCount: 94, author: "Fresh Start",
     image: "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1200&q=85",
     description: "A bright yogurt bowl loaded with berries, banana, and crunchy toppings.",
@@ -30,6 +33,7 @@ const starterRecipes = [
   },
   {
     id: "r4", title: "Roasted Garlic Tomato Soup", category: "Lunch", time: 45, difficulty: "Easy", servings: 4,
+    story: "On a chilly afternoon, the Home Table kitchen filled with the smell of tomatoes and garlic roasting in the oven. What started as an experiment to deepen the flavor of an ordinary tomato soup became a recipe people asked for again and again. The secret, according to the story, was giving the garlic and tomatoes enough time to caramelize.",
     rating: 4.6, ratingCount: 77, author: "Home Table",
     image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85",
     description: "Roasted tomatoes and garlic blended into a comforting soup.",
@@ -39,6 +43,7 @@ const starterRecipes = [
   },
   {
     id: "r5", title: "Avocado Toast", category: "Breakfast", time: 8, difficulty: "Easy", servings: 1,
+    story: "Everyday Eats traces this toast to slow weekend mornings, when there was just enough time to mash a ripe avocado and experiment with whatever was in the spice drawer. Lemon brought brightness, chili added a little spark, and a simple slice of toast became a breakfast staple.",
     rating: 4.5, ratingCount: 51, author: "Everyday Eats",
     image: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=1200&q=85",
     description: "Creamy avocado on crisp toast with lemon and chili.",
@@ -48,6 +53,7 @@ const starterRecipes = [
   },
   {
     id: "r6", title: "Garden Greek Salad", category: "Lunch", time: 15, difficulty: "Easy", servings: 2,
+    story: "The Green Spoon says this salad was born from a garden table in the middle of summer. Cucumbers, tomatoes, herbs, olives, and feta were gathered as they became ready, then tossed together with a quick lemon dressing. No complicated recipe was planned—the garden practically wrote it itself.",
     rating: 4.8, ratingCount: 113, author: "The Green Spoon",
     image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
     description: "Crisp vegetables, feta, olives, and a simple lemon dressing.",
@@ -140,6 +146,7 @@ function App() {
       id:"u-"+Date.now(), title:newRecipe.title || "Untitled Recipe", description:newRecipe.description,
       category:newRecipe.category, time:Number(newRecipe.time)||30, difficulty:"Easy", servings:Number(newRecipe.servings)||2,
       rating:0, ratingCount:0, author:"You",
+      story: `This recipe was created by you and shared on Tablely. Every home cook has a reason for making a dish—whether it started as a family tradition, a happy accident, or an idea from a busy weeknight. This is the beginning of its story.`,
       image:newRecipe.image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
       tags:[], ingredients:newRecipe.ingredients.split("\n").map(line=>{const p=line.split("|"); return {q:Number(p[0])||1,u:p[1]?.trim()||"",n:p[2]?.trim()||p[0]?.trim()||line.trim()};}).filter(i=>i.n),
       steps:newRecipe.steps.split("\n").map(s=>s.trim()).filter(Boolean)
@@ -189,7 +196,7 @@ function App() {
 
       {view==="recipe" && selectedRecipe && <main className="recipe-page">
         <div className="recipe-cover" style={{backgroundImage:`linear-gradient(0deg,rgba(8,12,10,.78),rgba(8,12,10,.05)),url(${selectedRecipe.image})`}}><button className="back" onClick={()=>setView("home")}>← Back</button><div className="cover-bottom"><span className="pill">{selectedRecipe.category}</span><h1>{selectedRecipe.title}</h1><p>By {selectedRecipe.author} · ★ {selectedRecipe.rating || "New"} {selectedRecipe.ratingCount ? `(${selectedRecipe.ratingCount})` : ""}</p></div></div>
-        <div className="recipe-layout"><div><section className="recipe-card"><div className="card-head"><h2>Ingredients</h2><button className="primary small" onClick={()=>addGroceries(selectedRecipe, servings/selectedRecipe.servings)}>＋ Shopping list</button></div><div className="servings"><span>Servings</span><button onClick={()=>setServings(Math.max(1,servings-1))}>−</button><b>{servings}</b><button onClick={()=>setServings(servings+1)}>＋</button><small>Scaled automatically</small></div><ul className="ingredients">{scaledIngredients.map((i,idx)=><li key={idx}><b>{Number.isInteger(i.q)?i.q:i.q.toFixed(1)}</b><span>{i.u}</span><span>{i.n}</span></li>)}</ul></section><section className="recipe-card"><h2>How to make it</h2><div className="steps">{selectedRecipe.steps.map((s,i)=><div className="step" key={i}><span>{i+1}</span><p>{s}</p></div>)}</div></section></div>
+        <div className="recipe-layout"><div><section className="recipe-card story-card"><span className="eyebrow dark">THE STORY BEHIND IT</span><h2>A little history with your meal</h2><p>{selectedRecipe.story || `Every recipe has a story. This one was created by ${selectedRecipe.author || "a home cook"} and shared with the Tablely community as a recipe worth passing along.`}</p></section><section className="recipe-card"><div className="card-head"><h2>Ingredients</h2><button className="primary small" onClick={()=>addGroceries(selectedRecipe, servings/selectedRecipe.servings)}>＋ Shopping list</button></div><div className="servings"><span>Servings</span><button onClick={()=>setServings(Math.max(1,servings-1))}>−</button><b>{servings}</b><button onClick={()=>setServings(servings+1)}>＋</button><small>Scaled automatically</small></div><ul className="ingredients">{scaledIngredients.map((i,idx)=><li key={idx}><b>{Number.isInteger(i.q)?i.q:i.q.toFixed(1)}</b><span>{i.u}</span><span>{i.n}</span></li>)}</ul></section><section className="recipe-card"><h2>How to make it</h2><div className="steps">{selectedRecipe.steps.map((s,i)=><div className="step" key={i}><span>{i+1}</span><p>{s}</p></div>)}</div></section></div>
         <aside><section className="side-card"><h3>Rate this recipe</h3><div className="stars">{[1,2,3,4,5].map(n=><button key={n} className={ratings[selectedRecipe.id]>=n?"star chosen":"star"} onClick={()=>rate(n)}>★</button>)}</div><p>{ratings[selectedRecipe.id] ? `You rated it ${ratings[selectedRecipe.id]}/5` : "Tap a star to rate"}</p></section><section className="side-card"><h3>Comments</h3><div className="comment-list">{(comments[selectedRecipe.id]||[]).map(c=><div className="comment" key={c.id}><b>{c.author}</b><small>{c.date}</small><p>{c.text}</p></div>)}</div><textarea value={commentText} onChange={e=>setCommentText(e.target.value)} placeholder="Share what you thought..."/><button className="primary full" onClick={addComment}>Post comment</button></section></aside></div>
       </main>}
 
