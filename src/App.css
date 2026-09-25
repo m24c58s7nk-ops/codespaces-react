@@ -79,3 +79,22 @@
 .dark-mode .story-card p,.dark-mode .recipe-card p,.dark-mode .match-card p,.dark-mode .modal p { color:#aeb8af !important; }
 .dark-mode .bottom-nav { background:#111713 !important; border-color:#344039 !important; }
 .dark-mode .quick-tools button { background:#19201b !important; color:#f1f3ef !important; border-color:#344039 !important; }
+
+
+.ai-status {
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f2eee3;
+  color: #34443a;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.form-card button:disabled {
+  opacity: .7;
+  cursor: wait;
+}
+.dark-mode .ai-status {
+  background: #222b24;
+  color: #dbe5dc;
+}
