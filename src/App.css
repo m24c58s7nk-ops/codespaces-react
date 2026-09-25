@@ -66,3 +66,16 @@
 .dark-mode .theme-btn { color: #f4d47a; }
 .theme-btn { background:none; border:1px solid #ddd7ca; border-radius:12px; width:40px; height:40px; font-size:20px; cursor:pointer; color:#263d2d; }
 @media(max-width:650px){.theme-btn{width:36px;height:36px;border:0}.topbar .theme-btn{display:block}}
+
+
+.dark-mode.app { background:#111713 !important; color:#f1f3ef; min-height:100vh; }
+.dark-mode .topbar { background:#111713 !important; color:#f1f3ef; border-bottom-color:#344039 !important; }
+.dark-mode .home-page,.dark-mode .page { background:#111713 !important; color:#f1f3ef; }
+.dark-mode .section { background:#111713 !important; }
+.dark-mode .recipe-card-tile,.dark-mode .recipe-card,.dark-mode .side-card,.dark-mode .form-card,.dark-mode .grocery-card,.dark-mode .filter-panel,.dark-mode .search-panel,.dark-mode .story-card,.dark-mode .day,.dark-mode .modal { background:#19201b !important; color:#f1f3ef; border-color:#344039 !important; }
+.dark-mode h1,.dark-mode h2,.dark-mode h3,.dark-mode h4,.dark-mode p,.dark-mode label,.dark-mode .page-title p,.dark-mode .section p { color:#f1f3ef; }
+.dark-mode input,.dark-mode textarea,.dark-mode select { background:#222b24 !important; color:#f1f3ef !important; border-color:#344039 !important; }
+.dark-mode input::placeholder,.dark-mode textarea::placeholder { color:#89958c; }
+.dark-mode .story-card p,.dark-mode .recipe-card p,.dark-mode .match-card p,.dark-mode .modal p { color:#aeb8af !important; }
+.dark-mode .bottom-nav { background:#111713 !important; border-color:#344039 !important; }
+.dark-mode .quick-tools button { background:#19201b !important; color:#f1f3ef !important; border-color:#344039 !important; }
