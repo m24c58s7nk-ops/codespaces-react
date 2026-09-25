@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";\n\nconst AI_API_BASE = import.meta.env.VITE_TABLELY_API_BASE || "";
 
 const starterRecipes = [
   {
@@ -197,7 +197,7 @@ function App() {
 
       const parsedSteps = newRecipe.steps.split("\n").map(s => s.trim()).filter(Boolean);
 
-      const aiResponse = await fetch("/api/recipe-ai", {
+      const aiResponse = await fetch(`${AI_API_BASE}/api/recipe-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -222,7 +222,7 @@ function App() {
       let image = newRecipe.image.trim();
       if (!image) {
         setAiStatus("Recipe looks good. Finding a food photo…");
-        const imageResponse = await fetch("/api/recipe-image", {
+        const imageResponse = await fetch(`${AI_API_BASE}/api/recipe-image`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
