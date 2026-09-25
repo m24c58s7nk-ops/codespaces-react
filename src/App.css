@@ -25,3 +25,44 @@
   line-height: 1.8;
   color: #5b625d;
 }
+
+
+/* Dark mode */
+.dark-mode {
+  --dm-bg: #111713;
+  --dm-surface: #19201b;
+  --dm-surface-2: #222b24;
+  --dm-border: #344039;
+  --dm-text: #f1f3ef;
+  --dm-muted: #aeb8af;
+  background: var(--dm-bg);
+  color: var(--dm-text);
+}
+.dark-mode .topbar,
+.dark-mode .bottom-nav { background: rgba(17,23,19,.96); border-color: var(--dm-border); }
+.dark-mode .brand,
+.dark-mode h1,.dark-mode h2,.dark-mode h3,.dark-mode h4,
+.dark-mode .page-title p,.dark-mode .section p { color: var(--dm-text); }
+.dark-mode .section,
+.dark-mode .page,
+.dark-mode .home-page { background: var(--dm-bg); }
+.dark-mode .recipe-card,
+.dark-mode .side-card,
+.dark-mode .form-card,
+.dark-mode .grocery-card,
+.dark-mode .filter-panel,
+.dark-mode .modal,
+.dark-mode .search-panel,
+.dark-mode .story-card { background: var(--dm-surface); border-color: var(--dm-border); color: var(--dm-text); }
+.dark-mode input,.dark-mode textarea,.dark-mode select,
+.dark-mode .filter-panel select { background: var(--dm-surface-2); color: var(--dm-text); border-color: var(--dm-border); }
+.dark-mode input::placeholder,.dark-mode textarea::placeholder { color: #7f8a82; }
+.dark-mode .recipe-card p,.dark-mode .story-card p,.dark-mode .modal p,
+.dark-mode .match-card p,.dark-mode .grocery small { color: var(--dm-muted); }
+.dark-mode .quick-tools button { background: var(--dm-surface); color: var(--dm-text); border-color: var(--dm-border); }
+.dark-mode .result-count { background: var(--dm-surface-2); color: var(--dm-muted); }
+.dark-mode .nav-item { color: #89948c; }
+.dark-mode .nav-item.active { color: #d8e6d8; }
+.dark-mode .theme-btn { color: #f4d47a; }
+.theme-btn { background:none; border:1px solid #ddd7ca; border-radius:12px; width:40px; height:40px; font-size:20px; cursor:pointer; color:#263d2d; }
+@media(max-width:650px){.theme-btn{width:36px;height:36px;border:0}.topbar .theme-btn{display:block}}
