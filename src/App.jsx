@@ -184,6 +184,30 @@ function App() {
     const next = {...ratings,[selectedRecipe.id]:value};
     update("recipe-ratings",next,setRatings);
   };
+  const localRecipeCheck = (recipe, ingredients, steps) => {
+    const title = (recipe.title || "").trim();
+    const polishedTitle = title.replace(/\s+/g, " ").replace(/(^|[.!?]\s+)([a-z])/g, (_, p, ch) => p + ch.toUpperCase());
+    const description = (recipe.description || "").trim().replace(/\s+/g, " ");
+    const valid = polishedTitle.length >= 3 && ingredients.length >= 2 && steps.length >= 2;
+    return {
+      valid,
+      reason: valid ? "Basic recipe check passed." : "Add a recipe title, at least two ingredients, and at least two steps.",
+      title: polishedTitle,
+      description,
+      category: recipe.category,
+      time: Number(recipe.time) || 30,
+      difficulty: "Easy",
+      servings: Number(recipe.servings) || 2,
+      story: "This recipe was shared by a Tablely home cook. Every good recipe starts with a simple idea and becomes a story when it reaches the table.",
+      tags: [],
+      ingredients,
+      steps: steps.map(s => {
+        const text = s.trim().replace(/\s+/g, " ");
+        return text ? text.charAt(0).toUpperCase() + text.slice(1).replace(/(?<![.!?])$/, ".") : text;
+      })
+    };
+  };
+
   const createRecipe = async e => {
     e.preventDefault();
     if (aiStatus === "Checking recipe…") return;
@@ -263,7 +287,39 @@ function App() {
       setServings(recipe.servings);
       setView("recipe");
     } catch (error) {
-      setAiStatus("⚠️ AI checking is unavailable right now. Your recipe was not published.");
+      // GitHub Pages cannot run the /api serverless functions. Keep the app usable
+      // with a local safety/format check until a backend URL is configured.
+      const local = localRecipeCheck(newRecipe, parsedIngredients, parsedSteps);
+      if (!local.valid) {
+        setAiStatus("⚠️ " + local.reason);
+        return;
+      }
+
+      const recipe = {
+        id:"u-"+Date.now(),
+        title:local.title,
+        description:local.description,
+        category:local.category,
+        time:local.time,
+        difficulty:local.difficulty,
+        servings:local.servings,
+        rating:0,
+        ratingCount:0,
+        author:"You",
+        story:local.story,
+        image:newRecipe.image.trim() || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
+        tags:local.tags,
+        ingredients:local.ingredients,
+        steps:local.steps
+      };
+
+      const next=[recipe,...recipes];
+      update("recipe-recipes",next,setRecipes);
+      setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
+      setAiStatus("Recipe saved with the local format check. Connect the AI backend to enable full AI validation and automatic image search.");
+      setSelected(recipe.id);
+      setServings(recipe.servings);
+      setView("recipe");
     }
   };
   const scaledIngredients = selectedRecipe?.ingredients.map(i => ({...i, q:i.q*(servings/selectedRecipe.servings)}));
