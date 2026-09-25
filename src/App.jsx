@@ -77,6 +77,10 @@ function App() {
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [timeFilter, setTimeFilter] = useState("Any");
+  const [difficultyFilter, setDifficultyFilter] = useState("Any");
+  const [sortFilter, setSortFilter] = useState("Recommended");
+  const [showFilters, setShowFilters] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
   const [servings, setServings] = useState(2);
   const [commentText, setCommentText] = useState("");
@@ -84,11 +88,20 @@ function App() {
   const [newRecipe, setNewRecipe] = useState({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
   
   const categories = ["All","Breakfast","Lunch","Dinner"];
-  const filtered = useMemo(() => recipes.filter(r => {
-    const q = search.toLowerCase();
-    const matchesText = !q || r.title.toLowerCase().includes(q) || r.tags.some(t => t.includes(q)) || r.ingredients.some(i => i.n.includes(q));
-    return matchesText && (category === "All" || r.category === category);
-  }), [recipes, search, category]);
+  const filtered = useMemo(() => {
+    let result = recipes.filter(r => {
+      const q = search.toLowerCase().trim();
+      const matchesText = !q || r.title.toLowerCase().includes(q) || r.tags.some(t => t.includes(q)) || r.ingredients.some(i => i.n.toLowerCase().includes(q));
+      const matchesCategory = category === "All" || r.category === category;
+      const matchesTime = timeFilter === "Any" || (timeFilter === "15 min or less" ? r.time <= 15 : timeFilter === "30 min or less" ? r.time <= 30 : r.time <= 60);
+      const matchesDifficulty = difficultyFilter === "Any" || r.difficulty === difficultyFilter;
+      return matchesText && matchesCategory && matchesTime && matchesDifficulty;
+    });
+    if (sortFilter === "Rating") result.sort((a,b)=>(b.rating||0)-(a.rating||0));
+    if (sortFilter === "Quickest") result.sort((a,b)=>a.time-b.time);
+    if (sortFilter === "Newest") result.sort((a,b)=>b.id.localeCompare(a.id));
+    return result;
+  }, [recipes, search, category, timeFilter, difficultyFilter, sortFilter]);
 
   const suggestions = useMemo(() => recipes.filter(r => !favorites.includes(r.id)).slice(0,4), [recipes, favorites]);
   const selectedRecipe = recipes.find(r => r.id === selected);
@@ -150,9 +163,9 @@ function App() {
         <button className="install-btn" onClick={()=>setShowInstall(true)}>Install App</button>
       </header>
 
-      {view==="home" && <main>
-        <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(15,23,20,.82),rgba(15,23,20,.15)),url(${hero.image})`}}>
-          <div className="hero-content"><span className="eyebrow">RECIPE OF THE DAY</span><h1>{hero.title}</h1><p>{hero.description}</p><div className="hero-actions"><button className="primary" onClick={()=>{setSelected(hero.id);setServings(hero.servings);setView("recipe")}}>View Recipe</button><button className="glass" onClick={()=>toggleFavorite(hero.id)}>{favorites.includes(hero.id)?"♥ Saved":"♡ Save"}</button></div></div>
+      {view==="home" && <main className="home-page">
+        <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(12,21,16,.9),rgba(12,21,16,.2)),url(${hero.image})`}}>
+          <div className="hero-content"><span className="eyebrow">WELCOME TO TABLELY</span><h1>Good food starts with a great idea.</h1><p>Discover recipes, save favorites, plan your week, and turn every recipe into a shopping list.</p><div className="hero-actions"><button className="primary" onClick={()=>setView("explore")}>Explore recipes</button><button className="glass" onClick={()=>setView("add")}>＋ Add a recipe</button></div></div>
         </section>
         <section className="section"><div className="section-head"><div><span className="eyebrow dark">DISCOVER</span><h2>What are you craving?</h2></div><button className="text-btn" onClick={()=>setView("explore")}>See all →</button></div>
           <div className="chips">{categories.map(c=><button className={category===c?"chip active":"chip"} key={c} onClick={()=>{setCategory(c);setView("explore")}}>{c}</button>)}</div>
@@ -161,7 +174,18 @@ function App() {
         <section className="section soft"><div className="section-head"><div><span className="eyebrow dark">PERSONALIZED</span><h2>Picked for you</h2></div></div><RecipeGrid recipes={suggestions} onOpen={id=>{setSelected(id);setView("recipe")}} favorites={favorites} onFavorite={toggleFavorite}/></section>
       </main>}
 
-      {view==="explore" && <main className="page"><div className="page-title"><span className="eyebrow dark">EXPLORE</span><h1>Find your next favorite</h1><p>Search recipes, ingredients, or tags.</p></div><div className="search-panel"><span>⌕</span><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Try “chicken”, “quick”, or “pasta”"/></div><div className="chips">{categories.map(c=><button className={category===c?"chip active":"chip"} key={c} onClick={()=>setCategory(c)}>{c}</button>)}</div><RecipeGrid recipes={filtered} onOpen={id=>{setSelected(id);setServings(recipes.find(r=>r.id===id).servings);setView("recipe")}} favorites={favorites} onFavorite={toggleFavorite}/></main>}
+      {view==="explore" && <main className="page explore-page">
+        <div className="explore-heading"><div><span className="eyebrow dark">EXPLORE</span><h1>Find something delicious</h1><p>Search by recipe, ingredient, or tag.</p></div><span className="result-count">{filtered.length} recipes</span></div>
+        <div className="search-panel large-search"><span>⌕</span><input autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search chicken, pasta, quick meals..."/><button className="filter-toggle" onClick={()=>setShowFilters(!showFilters)}>☷ Filters</button></div>
+        <div className="chips category-row">{categories.map(c=><button className={category===c?"chip active":"chip"} key={c} onClick={()=>setCategory(c)}>{c}</button>)}</div>
+        {showFilters && <div className="filter-panel">
+          <label>Cooking time<select value={timeFilter} onChange={e=>setTimeFilter(e.target.value)}><option>Any</option><option>15 min or less</option><option>30 min or less</option><option>60 min or less</option></select></label>
+          <label>Difficulty<select value={difficultyFilter} onChange={e=>setDifficultyFilter(e.target.value)}><option>Any</option><option>Easy</option><option>Medium</option><option>Hard</option></select></label>
+          <label>Sort by<select value={sortFilter} onChange={e=>setSortFilter(e.target.value)}><option>Recommended</option><option>Rating</option><option>Quickest</option><option>Newest</option></select></label>
+          <button className="clear-filters" onClick={()=>{setCategory("All");setTimeFilter("Any");setDifficultyFilter("Any");setSortFilter("Recommended");setSearch("");}}>Clear all</button>
+        </div>}
+        <RecipeGrid recipes={filtered} onOpen={id=>{setSelected(id);setServings(recipes.find(r=>r.id===id).servings);setView("recipe")}} favorites={favorites} onFavorite={toggleFavorite}/>
+      </main>}
 
       {view==="recipe" && selectedRecipe && <main className="recipe-page">
         <div className="recipe-cover" style={{backgroundImage:`linear-gradient(0deg,rgba(8,12,10,.78),rgba(8,12,10,.05)),url(${selectedRecipe.image})`}}><button className="back" onClick={()=>setView("home")}>← Back</button><div className="cover-bottom"><span className="pill">{selectedRecipe.category}</span><h1>{selectedRecipe.title}</h1><p>By {selectedRecipe.author} · ★ {selectedRecipe.rating || "New"} {selectedRecipe.ratingCount ? `(${selectedRecipe.ratingCount})` : ""}</p></div></div>
