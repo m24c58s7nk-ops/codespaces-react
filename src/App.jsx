@@ -142,6 +142,7 @@ function App() {
   const [showInstall, setShowInstall] = useState(false);
   const [darkMode, setDarkMode] = useState(() => load("tablely-dark-mode", false));
   const [newRecipe, setNewRecipe] = useState({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
+  const [aiStatus, setAiStatus] = useState("");
   
   const categories = ["All","Breakfast","Lunch","Dinner"];
   const filtered = useMemo(() => {
@@ -183,18 +184,87 @@ function App() {
     const next = {...ratings,[selectedRecipe.id]:value};
     update("recipe-ratings",next,setRatings);
   };
-  const createRecipe = e => {
+  const createRecipe = async e => {
     e.preventDefault();
-    const recipe = {
-      id:"u-"+Date.now(), title:newRecipe.title || "Untitled Recipe", description:newRecipe.description,
-      category:newRecipe.category, time:Number(newRecipe.time)||30, difficulty:"Easy", servings:Number(newRecipe.servings)||2,
-      rating:0, ratingCount:0, author:"You",
-      story: `This recipe was created by you and shared on Tablely. Every home cook has a reason for making a dish—whether it started as a family tradition, a happy accident, or an idea from a busy weeknight. This is the beginning of its story.`,
-      image:newRecipe.image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
-      tags:[], ingredients:newRecipe.ingredients.split("\n").map(line=>{const p=line.split("|"); return {q:Number(p[0])||1,u:p[1]?.trim()||"",n:p[2]?.trim()||p[0]?.trim()||line.trim()};}).filter(i=>i.n),
-      steps:newRecipe.steps.split("\n").map(s=>s.trim()).filter(Boolean)
-    };
-    const next=[recipe,...recipes]; update("recipe-recipes",next,setRecipes); setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""}); setSelected(recipe.id); setView("recipe");
+    if (aiStatus === "Checking recipe…") return;
+
+    setAiStatus("Checking recipe…");
+    try {
+      const parsedIngredients = newRecipe.ingredients.split("\n").map(line => {
+        const p = line.split("|");
+        return { q: Number(p[0]) || 1, u: p[1]?.trim() || "", n: p[2]?.trim() || p[0]?.trim() || line.trim() };
+      }).filter(i => i.n);
+
+      const parsedSteps = newRecipe.steps.split("\n").map(s => s.trim()).filter(Boolean);
+
+      const aiResponse = await fetch("/api/recipe-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newRecipe.title,
+          description: newRecipe.description,
+          category: newRecipe.category,
+          time: Number(newRecipe.time) || 30,
+          servings: Number(newRecipe.servings) || 2,
+          ingredients: parsedIngredients,
+          steps: parsedSteps
+        })
+      });
+
+      if (!aiResponse.ok) throw new Error("AI service unavailable");
+      const polished = await aiResponse.json();
+
+      if (!polished.valid) {
+        setAiStatus("⚠️ This doesn't look like a complete, legitimate recipe yet. Please fix the highlighted content and try again.");
+        return;
+      }
+
+      let image = newRecipe.image.trim();
+      if (!image) {
+        setAiStatus("Recipe looks good. Finding a food photo…");
+        const imageResponse = await fetch("/api/recipe-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: polished.title,
+            ingredients: polished.ingredients,
+            category: polished.category
+          })
+        });
+        if (imageResponse.ok) {
+          const imageData = await imageResponse.json();
+          image = imageData.url || "";
+        }
+      }
+
+      const recipe = {
+        id:"u-"+Date.now(),
+        title:polished.title,
+        description:polished.description,
+        category:polished.category,
+        time:Number(polished.time)||30,
+        difficulty:polished.difficulty || "Easy",
+        servings:Number(polished.servings)||2,
+        rating:0,
+        ratingCount:0,
+        author:"You",
+        story: polished.story,
+        image:image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
+        tags:Array.isArray(polished.tags) ? polished.tags : [],
+        ingredients:Array.isArray(polished.ingredients) ? polished.ingredients : parsedIngredients,
+        steps:Array.isArray(polished.steps) ? polished.steps : parsedSteps
+      };
+
+      const next=[recipe,...recipes];
+      update("recipe-recipes",next,setRecipes);
+      setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
+      setAiStatus("");
+      setSelected(recipe.id);
+      setServings(recipe.servings);
+      setView("recipe");
+    } catch (error) {
+      setAiStatus("⚠️ AI checking is unavailable right now. Your recipe was not published.");
+    }
   };
   const scaledIngredients = selectedRecipe?.ingredients.map(i => ({...i, q:i.q*(servings/selectedRecipe.servings)}));
 
@@ -238,7 +308,7 @@ function App() {
         <aside><section className="side-card"><h3>Rate this recipe</h3><div className="stars">{[1,2,3,4,5].map(n=><button key={n} className={ratings[selectedRecipe.id]>=n?"star chosen":"star"} onClick={()=>rate(n)}>★</button>)}</div><p>{ratings[selectedRecipe.id] ? `You rated it ${ratings[selectedRecipe.id]}/5` : "Tap a star to rate"}</p></section><section className="side-card"><h3>Comments</h3><div className="comment-list">{(comments[selectedRecipe.id]||[]).map(c=><div className="comment" key={c.id}><b>{c.author}</b><small>{c.date}</small><p>{c.text}</p></div>)}</div><textarea value={commentText} onChange={e=>setCommentText(e.target.value)} placeholder="Share what you thought..."/><button className="primary full" onClick={addComment}>Post comment</button></section></aside></div>
       </main>}
 
-      {view==="add" && <main className="page narrow"><div className="page-title"><span className="eyebrow dark">CREATE</span><h1>Add your recipe</h1><p>Share something delicious with the community.</p></div><form className="form-card" onSubmit={createRecipe}><label>Recipe title<input required value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} placeholder="e.g. Grandma's Sunday Lasagna"/></label><label>Recipe photo URL<input value={newRecipe.image} onChange={e=>setNewRecipe({...newRecipe,image:e.target.value})} placeholder="Paste an image URL for the recipe background"/></label><div className="two"><label>Category<select value={newRecipe.category} onChange={e=>setNewRecipe({...newRecipe,category:e.target.value})}><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></label><label>Servings<input type="number" min="1" value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})}/></label></div><label>Description<textarea value={newRecipe.description} onChange={e=>setNewRecipe({...newRecipe,description:e.target.value})} placeholder="What makes this recipe special?"/></label><label>Ingredients <small>One per line: quantity | unit | ingredient</small><textarea required value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} placeholder={"2 | cups | flour\n1 | tsp | salt\n3 | | eggs"}/></label><label>Steps <small>One step per line</small><textarea required value={newRecipe.steps} onChange={e=>setNewRecipe({...newRecipe,steps:e.target.value})} placeholder={"Mix the ingredients.\nBake until golden.\nServe warm."}/></label><button className="primary big" type="submit">Publish recipe</button></form></main>}
+      {view==="add" && <main className="page narrow"><div className="page-title"><span className="eyebrow dark">CREATE</span><h1>Add your recipe</h1><p>Share something delicious with the community.</p></div><form className="form-card" onSubmit={createRecipe}><label>Recipe title<input required value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} placeholder="e.g. Grandma's Sunday Lasagna"/></label><label>Recipe photo URL<input value={newRecipe.image} onChange={e=>setNewRecipe({...newRecipe,image:e.target.value})} placeholder="Paste an image URL for the recipe background"/></label><div className="two"><label>Category<select value={newRecipe.category} onChange={e=>setNewRecipe({...newRecipe,category:e.target.value})}><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></label><label>Servings<input type="number" min="1" value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})}/></label></div><label>Description<textarea value={newRecipe.description} onChange={e=>setNewRecipe({...newRecipe,description:e.target.value})} placeholder="What makes this recipe special?"/></label><label>Ingredients <small>One per line: quantity | unit | ingredient</small><textarea required value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} placeholder={"2 | cups | flour\n1 | tsp | salt\n3 | | eggs"}/></label><label>Steps <small>One step per line</small><textarea required value={newRecipe.steps} onChange={e=>setNewRecipe({...newRecipe,steps:e.target.value})} placeholder={"Mix the ingredients.\nBake until golden.\nServe warm."}/></label><button className="primary big" type="submit" disabled={aiStatus==="Checking recipe…"}>{aiStatus==="Checking recipe…" ? "✨ AI is checking…" : "✨ Check recipe with AI & publish"}</button>{aiStatus && <p className="ai-status">{aiStatus}</p>}</form></main>}
 
       {view==="planner" && <main className="page"><div className="page-title"><span className="eyebrow dark">PLAN AHEAD</span><h1>Weekly meal planner</h1><p>Build your week with your favorite recipes.</p></div><div className="planner">{Object.entries(planner).map(([day,id])=><div className="day" key={day}><b>{day}</b>{id ? <div className="planned" style={{backgroundImage:`linear-gradient(0deg,rgba(0,0,0,.62),transparent),url(${recipes.find(r=>r.id===id)?.image})`}}><span>{recipes.find(r=>r.id===id)?.title}</span><button onClick={()=>{const next={...planner,[day]:null};update("recipe-planner",next,setPlanner)}}>×</button></div> : <select value="" onChange={e=>{const next={...planner,[day]:e.target.value};update("recipe-planner",next,setPlanner)}}><option value="">＋ Add recipe</option>{recipes.map(r=><option key={r.id} value={r.id}>{r.title}</option>)}</select>}</div>)}</div></main>}
 
