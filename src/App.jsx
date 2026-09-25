@@ -126,7 +126,6 @@ function App() {
   const [recipes, setRecipes] = useState(() => load("recipe-recipes", starterRecipes));
   const [favorites, setFavorites] = useState(() => load("recipe-favorites", ["r1","r5"]));
   const [planner, setPlanner] = useState(() => load("recipe-planner", initialPlanner));
-  const [groceries, setGroceries] = useState(() => load("recipe-groceries", []));
   const [ratings, setRatings] = useState(() => load("recipe-ratings", {}));
   const [comments, setComments] = useState(() => load("recipe-comments", {}));
   const [view, setView] = useState("home");
@@ -137,7 +136,6 @@ function App() {
   const [difficultyFilter, setDifficultyFilter] = useState("Any");
   const [sortFilter, setSortFilter] = useState("Recommended");
   const [showFilters, setShowFilters] = useState(false);
-  const [ingredientInput, setIngredientInput] = useState("");
   const [servings, setServings] = useState(2);
   const [commentText, setCommentText] = useState("");
   const [showInstall, setShowInstall] = useState(false);
@@ -162,24 +160,11 @@ function App() {
 
   const suggestions = useMemo(() => recipes.filter(r => !favorites.includes(r.id)).slice(0,4), [recipes, favorites]);
   const selectedRecipe = recipes.find(r => r.id === selected);
-  const ingredientMatches = useMemo(() => {
-    const have = ingredientInput.toLowerCase().split(",").map(x=>x.trim()).filter(Boolean);
-    if (!have.length) return [];
-    return recipes.map(r => {
-      const missing = r.ingredients.filter(i => !have.some(h => i.n.toLowerCase().includes(h))).map(i=>i.n);
-      return {...r, missing};
-    }).sort((a,b)=>a.missing.length-b.missing.length);
-  }, [ingredientInput, recipes]);
 
   const update = (key, value, setter) => { setter(value); save(key,value); };
   const toggleFavorite = id => {
     const next = favorites.includes(id) ? favorites.filter(x=>x!==id) : [...favorites,id];
     update("recipe-favorites", next, setFavorites);
-  };
-  const addGroceries = (recipe, multiplier = 1) => {
-    const additions = recipe.ingredients.map(i => ({id: crypto.randomUUID(), name:i.n, quantity: +(i.q*multiplier).toFixed(2), unit:i.u, recipeId:recipe.id, checked:false}));
-    const next = [...groceries, ...additions];
-    update("recipe-groceries", next, setGroceries);
   };
   const addComment = () => {
     if (!selectedRecipe || !commentText.trim()) return;
@@ -205,12 +190,6 @@ function App() {
     const next=[recipe,...recipes]; update("recipe-recipes",next,setRecipes); setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""}); setSelected(recipe.id); setView("recipe");
   };
   const scaledIngredients = selectedRecipe?.ingredients.map(i => ({...i, q:i.q*(servings/selectedRecipe.servings)}));
-  const plannerGroceries = Object.values(planner).filter(Boolean).map(id=>recipes.find(r=>r.id===id)).filter(Boolean);
-  const generateWeekly = () => {
-    const items = plannerGroceries.flatMap(r=>r.ingredients.map(i=>({id:crypto.randomUUID(),name:i.n,quantity:i.q,unit:i.u,recipeId:r.id,checked:false})));
-    update("recipe-groceries",items,setGroceries);
-    setView("planner");
-  };
 
   const hero = recipes[0];
   return (
@@ -223,7 +202,7 @@ function App() {
 
       {view==="home" && <main className="home-page">
         <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(12,21,16,.9),rgba(12,21,16,.2)),url(${hero.image})`}}>
-          <div className="hero-content"><span className="eyebrow">WELCOME TO TABLELY</span><h1>Good food starts with a great idea.</h1><p>Discover recipes, save favorites, plan your week, and turn every recipe into a shopping list.</p><div className="hero-actions"><button className="primary" onClick={()=>setView("explore")}>Explore recipes</button><button className="glass" onClick={()=>setView("add")}>＋ Add a recipe</button></div></div>
+          <div className="hero-content"><span className="eyebrow">WELCOME TO TABLELY</span><h1>Good food starts with a great idea.</h1><p>Discover recipes, save favorites, and plan your week.</p><div className="hero-actions"><button className="primary" onClick={()=>setView("explore")}>Explore recipes</button><button className="glass" onClick={()=>setView("add")}>＋ Add a recipe</button></div></div>
         </section>
         <section className="section"><div className="section-head"><div><span className="eyebrow dark">DISCOVER</span><h2>What are you craving?</h2></div><button className="text-btn" onClick={()=>setView("explore")}>See all →</button></div>
           <div className="chips">{categories.map(c=><button className={category===c?"chip active":"chip"} key={c} onClick={()=>{setCategory(c);setView("explore")}}>{c}</button>)}</div>
@@ -247,13 +226,13 @@ function App() {
 
       {view==="recipe" && selectedRecipe && <main className="recipe-page">
         <div className="recipe-cover" style={{backgroundImage:`linear-gradient(0deg,rgba(8,12,10,.78),rgba(8,12,10,.05)),url(${selectedRecipe.image})`}}><button className="back" onClick={()=>setView("home")}>← Back</button><div className="cover-bottom"><span className="pill">{selectedRecipe.category}</span><h1>{selectedRecipe.title}</h1><p>By {selectedRecipe.author} · ★ {selectedRecipe.rating || "New"} {selectedRecipe.ratingCount ? `(${selectedRecipe.ratingCount})` : ""}</p></div></div>
-        <div className="recipe-layout"><div><section className="recipe-card story-card"><span className="eyebrow dark">THE STORY BEHIND IT</span><h2>A little history with your meal</h2><p>{selectedRecipe.story || `Every recipe has a story. This one was created by ${selectedRecipe.author || "a home cook"} and shared with the Tablely community as a recipe worth passing along.`}</p></section><section className="recipe-card"><div className="card-head"><h2>Ingredients</h2><button className="primary small" onClick={()=>addGroceries(selectedRecipe, servings/selectedRecipe.servings)}>＋ Shopping list</button></div><div className="servings"><span>Servings</span><button onClick={()=>setServings(Math.max(1,servings-1))}>−</button><b>{servings}</b><button onClick={()=>setServings(servings+1)}>＋</button><small>Scaled automatically</small></div><ul className="ingredients">{scaledIngredients.map((i,idx)=><li key={idx}><b>{Number.isInteger(i.q)?i.q:i.q.toFixed(1)}</b><span>{i.u}</span><span>{i.n}</span></li>)}</ul></section><section className="recipe-card"><h2>How to make it</h2><div className="steps">{selectedRecipe.steps.map((s,i)=><div className="step" key={i}><span>{i+1}</span><p>{s}</p></div>)}</div></section></div>
+        <div className="recipe-layout"><div><section className="recipe-card story-card"><span className="eyebrow dark">THE STORY BEHIND IT</span><h2>A little history with your meal</h2><p>{selectedRecipe.story || `Every recipe has a story. This one was created by ${selectedRecipe.author || "a home cook"} and shared with the Tablely community as a recipe worth passing along.`}</p></section><section className="recipe-card"><div className="card-head"><h2>Ingredients</h2></div><div className="servings"><span>Servings</span><button onClick={()=>setServings(Math.max(1,servings-1))}>−</button><b>{servings}</b><button onClick={()=>setServings(servings+1)}>＋</button><small>Scaled automatically</small></div><ul className="ingredients">{scaledIngredients.map((i,idx)=><li key={idx}><b>{Number.isInteger(i.q)?i.q:i.q.toFixed(1)}</b><span>{i.u}</span><span>{i.n}</span></li>)}</ul></section><section className="recipe-card"><h2>How to make it</h2><div className="steps">{selectedRecipe.steps.map((s,i)=><div className="step" key={i}><span>{i+1}</span><p>{s}</p></div>)}</div></section></div>
         <aside><section className="side-card"><h3>Rate this recipe</h3><div className="stars">{[1,2,3,4,5].map(n=><button key={n} className={ratings[selectedRecipe.id]>=n?"star chosen":"star"} onClick={()=>rate(n)}>★</button>)}</div><p>{ratings[selectedRecipe.id] ? `You rated it ${ratings[selectedRecipe.id]}/5` : "Tap a star to rate"}</p></section><section className="side-card"><h3>Comments</h3><div className="comment-list">{(comments[selectedRecipe.id]||[]).map(c=><div className="comment" key={c.id}><b>{c.author}</b><small>{c.date}</small><p>{c.text}</p></div>)}</div><textarea value={commentText} onChange={e=>setCommentText(e.target.value)} placeholder="Share what you thought..."/><button className="primary full" onClick={addComment}>Post comment</button></section></aside></div>
       </main>}
 
       {view==="add" && <main className="page narrow"><div className="page-title"><span className="eyebrow dark">CREATE</span><h1>Add your recipe</h1><p>Share something delicious with the community.</p></div><form className="form-card" onSubmit={createRecipe}><label>Recipe title<input required value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} placeholder="e.g. Grandma's Sunday Lasagna"/></label><label>Recipe photo URL<input value={newRecipe.image} onChange={e=>setNewRecipe({...newRecipe,image:e.target.value})} placeholder="Paste an image URL for the recipe background"/></label><div className="two"><label>Category<select value={newRecipe.category} onChange={e=>setNewRecipe({...newRecipe,category:e.target.value})}><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></label><label>Servings<input type="number" min="1" value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})}/></label></div><label>Description<textarea value={newRecipe.description} onChange={e=>setNewRecipe({...newRecipe,description:e.target.value})} placeholder="What makes this recipe special?"/></label><label>Ingredients <small>One per line: quantity | unit | ingredient</small><textarea required value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} placeholder={"2 | cups | flour\n1 | tsp | salt\n3 | | eggs"}/></label><label>Steps <small>One step per line</small><textarea required value={newRecipe.steps} onChange={e=>setNewRecipe({...newRecipe,steps:e.target.value})} placeholder={"Mix the ingredients.\nBake until golden.\nServe warm."}/></label><button className="primary big" type="submit">Publish recipe</button></form></main>}
 
-      {view==="planner" && <main className="page"><div className="page-title"><span className="eyebrow dark">PLAN AHEAD</span><h1>Weekly meal planner</h1><p>Build your week, then turn it into one grocery list.</p></div><div className="planner">{Object.entries(planner).map(([day,id])=><div className="day" key={day}><b>{day}</b>{id ? <div className="planned" style={{backgroundImage:`linear-gradient(0deg,rgba(0,0,0,.62),transparent),url(${recipes.find(r=>r.id===id)?.image})`}}><span>{recipes.find(r=>r.id===id)?.title}</span><button onClick={()=>{const next={...planner,[day]:null};update("recipe-planner",next,setPlanner)}}>×</button></div> : <select value="" onChange={e=>{const next={...planner,[day]:e.target.value};update("recipe-planner",next,setPlanner)}}><option value="">＋ Add recipe</option>{recipes.map(r=><option key={r.id} value={r.id}>{r.title}</option>)}</select>}</div>)}</div><button className="primary big" onClick={generateWeekly}>🛒 Generate weekly grocery list</button></main>}
+      {view==="planner" && <main className="page"><div className="page-title"><span className="eyebrow dark">PLAN AHEAD</span><h1>Weekly meal planner</h1><p>Build your week with your favorite recipes.</p></div><div className="planner">{Object.entries(planner).map(([day,id])=><div className="day" key={day}><b>{day}</b>{id ? <div className="planned" style={{backgroundImage:`linear-gradient(0deg,rgba(0,0,0,.62),transparent),url(${recipes.find(r=>r.id===id)?.image})`}}><span>{recipes.find(r=>r.id===id)?.title}</span><button onClick={()=>{const next={...planner,[day]:null};update("recipe-planner",next,setPlanner)}}>×</button></div> : <select value="" onChange={e=>{const next={...planner,[day]:e.target.value};update("recipe-planner",next,setPlanner)}}><option value="">＋ Add recipe</option>{recipes.map(r=><option key={r.id} value={r.id}>{r.title}</option>)}</select>}</div>)}</div></main>}
 
       {view==="groceries" && <main className="page"><div className="page-title"><span className="eyebrow dark">SHOP</span><h1>Grocery list</h1><p>Your recipe and weekly meal-plan ingredients.</p></div><section className="grocery-card">{groceries.length===0 ? <div className="empty">Your grocery list is empty. Open a recipe and add its ingredients.</div> : groceries.map(item=><label className={item.checked?"grocery done":"grocery"} key={item.id}><input type="checkbox" checked={item.checked} onChange={()=>{const next=groceries.map(x=>x.id===item.id?{...x,checked:!x.checked}:x);update("recipe-groceries",next,setGroceries)}}/><span><b>{item.quantity}</b> {item.unit} {item.name}</span><small>{recipes.find(r=>r.id===item.recipeId)?.title}</small></label>)}{groceries.length>0&&<button className="text-btn" onClick={()=>update("recipe-groceries",[],setGroceries)}>Clear list</button>}</section></main>}
 
@@ -264,7 +243,6 @@ function App() {
       {showInstall && <div className="modal-wrap" onClick={()=>setShowInstall(false)}><div className="modal" onClick={e=>e.stopPropagation()}><button className="modal-x" onClick={()=>setShowInstall(false)}>×</button><div className="install-icon">✦</div><h2>Install Tablely</h2><p>Use your browser's <b>Add to Home Screen</b> option to keep your recipe app handy. On supported browsers, use the install button in the address bar.</p><button className="primary full" onClick={()=>setShowInstall(false)}>Got it</button></div></div>}
 
       <nav className="bottom-nav"><Nav icon="⌂" label="Home" active={view==="home"} onClick={()=>setView("home")}/><Nav icon="⌕" label="Explore" active={view==="explore"} onClick={()=>setView("explore")}/><button className="add-nav" onClick={()=>setView("add")}>＋</button><Nav icon="▣" label="Planner" active={view==="planner"} onClick={()=>setView("planner")}/><Nav icon="♡" label="Saved" active={view==="saved"} onClick={()=>setView("saved")}/></nav>
-      <div className="quick-tools"><button onClick={()=>setView("ingredients")}>🥕 What can I make?</button><button onClick={()=>setView("groceries")}>🛒 Grocery list {groceries.length ? `(${groceries.filter(x=>!x.checked).length})` : ""}</button></div>
     </div>
   );
 }
