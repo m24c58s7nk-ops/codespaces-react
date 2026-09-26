@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 
-const AI_API_BASE = import.meta.env.VITE_TABLELY_API_BASE || "";
+const AI_API_BASE = import.meta.env.VITE_FLAVORLYST_API_BASE || "";
 
 const starterRecipes = [
   {
