@@ -145,6 +145,12 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => load("flavorlyst-dark-mode", false));
   const [newRecipe, setNewRecipe] = useState({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
   const [aiStatus, setAiStatus] = useState("");
+  const [showAI, setShowAI] = useState(false);
+  const [aiInput, setAiInput] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiMessages, setAiMessages] = useState([
+    { role: "assistant", text: "Hi! I'm Flavorlyst AI. Ask me what to cook, help with a recipe, ingredient swaps, or anything about the recipes in Flavorlyst." }
+  ]);
   
   const categories = ["All","Breakfast","Lunch","Dinner"];
   const filtered = useMemo(() => {
@@ -327,6 +333,66 @@ function App() {
       setView("recipe");
     }
   };
+  const askFlavorlystAI = async e => {
+    e?.preventDefault();
+    const message = aiInput.trim();
+    if (!message || aiBusy) return;
+
+    const userMessage = { role: "user", text: message };
+    setAiMessages(prev => [...prev, userMessage]);
+    setAiInput("");
+    setAiBusy(true);
+
+    try {
+      const recipeContext = recipes.slice(0, 20).map(r => ({
+        id: r.id,
+        title: r.title,
+        category: r.category,
+        time: r.time,
+        ingredients: (r.ingredients || []).map(i => [i.q, i.u, i.n].filter(Boolean).join(" ")).slice(0, 12),
+        description: r.description
+      }));
+
+      const response = await fetch(`${AI_API_BASE}/api/flavorlyst-ai`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          currentRecipe: selectedRecipe ? {
+            id: selectedRecipe.id,
+            title: selectedRecipe.title,
+            ingredients: selectedRecipe.ingredients,
+            steps: selectedRecipe.steps
+          } : null,
+          recipes: recipeContext
+        })
+      });
+
+      if (!response.ok) throw new Error("AI service unavailable");
+      const data = await response.json();
+
+      setAiMessages(prev => [...prev, {
+        role: "assistant",
+        text: data.answer || "I couldn't come up with an answer right now."
+      }]);
+
+      if (data.recipeId) {
+        const match = recipes.find(r => r.id === data.recipeId);
+        if (match) {
+          setSelected(match.id);
+          setServings(match.servings);
+        }
+      }
+    } catch {
+      setAiMessages(prev => [...prev, {
+        role: "assistant",
+        text: "I can't reach the Flavorlyst AI service right now. The AI stays inside Flavorlyst, but its secure AI connection needs to be configured for this site."
+      }]);
+    } finally {
+      setAiBusy(false);
+    }
+  };
+
   const scaledIngredients = selectedRecipe?.ingredients.map(i => ({...i, q:i.q*(servings/selectedRecipe.servings)}));
 
   const hero = recipes[0];
@@ -335,7 +401,7 @@ function App() {
       <header className="topbar">
         <button className="brand" onClick={()=>setView("home")}><span className="brand-mark">✦</span><span>Flavor<span className="brand-accent">lyst</span></span></button>
         <div className="desktop-search"><span>⌕</span><input value={search} onChange={e=>{setSearch(e.target.value);setView("explore")}} placeholder="Search recipes, ingredients..." /></div>
-        <button className="theme-btn" onClick={() => { const next = !darkMode; setDarkMode(next); save("flavorlyst-dark-mode", next); }} aria-label="Toggle dark mode">{darkMode ? "☀" : "☾"}</button><button className="install-btn" onClick={()=>setShowInstall(true)}>Install App</button>
+        <button className="ai-top-btn" onClick={()=>setShowAI(true)}>✨ Flavorlyst AI</button><button className="theme-btn" onClick={() => { const next = !darkMode; setDarkMode(next); save("flavorlyst-dark-mode", next); }} aria-label="Toggle dark mode">{darkMode ? "☀" : "☾"}</button><button className="install-btn" onClick={()=>setShowInstall(true)}>Install App</button>
       </header>
 
       {view==="home" && <main className="home-page">
@@ -376,6 +442,27 @@ function App() {
       {view==="saved" && <main className="page"><div className="page-title"><span className="eyebrow dark">YOUR COLLECTION</span><h1>Saved recipes</h1><p>Your favorites, all in one place.</p></div><RecipeGrid recipes={recipes.filter(r=>favorites.includes(r.id))} onOpen={id=>{setSelected(id);setServings(recipes.find(r=>r.id===id).servings);setView("recipe")}} favorites={favorites} onFavorite={toggleFavorite}/></main>}
 
       {showInstall && <div className="modal-wrap" onClick={()=>setShowInstall(false)}><div className="modal" onClick={e=>e.stopPropagation()}><button className="modal-x" onClick={()=>setShowInstall(false)}>×</button><div className="install-icon">✦</div><h2>Install Flavorlyst</h2><p>Use your browser's <b>Add to Home Screen</b> option to keep your recipe app handy. On supported browsers, use the install button in the address bar.</p><button className="primary full" onClick={()=>setShowInstall(false)}>Got it</button></div></div>}
+
+      {showAI && <div className="ai-overlay" onClick={()=>setShowAI(false)}>
+        <section className="ai-panel" onClick={e=>e.stopPropagation()}>
+          <div className="ai-panel-head">
+            <div><span className="ai-sparkle">✦</span><div><b>Flavorlyst AI</b><small>Your in-app cooking assistant</small></div></div>
+            <button onClick={()=>setShowAI(false)} aria-label="Close AI">×</button>
+          </div>
+          <div className="ai-messages">
+            {aiMessages.map((m,i)=><div key={i} className={m.role==="user" ? "ai-message user" : "ai-message assistant"}>{m.text}</div>)}
+            {aiBusy && <div className="ai-message assistant ai-thinking">Thinking…</div>}
+          </div>
+          <form className="ai-input-row" onSubmit={askFlavorlystAI}>
+            <input value={aiInput} onChange={e=>setAiInput(e.target.value)} placeholder="Ask Flavorlyst AI…" disabled={aiBusy} />
+            <button className="primary" type="submit" disabled={aiBusy || !aiInput.trim()}>Send</button>
+          </form>
+          <div className="ai-suggestions">
+            {["What should I make tonight?","Give me a quick dinner","How can I swap an ingredient?"].map(q=><button key={q} onClick={()=>setAiInput(q)}>{q}</button>)}
+          </div>
+        </section>
+      </div>}
+      {!showAI && <button className="ai-fab" onClick={()=>setShowAI(true)} aria-label="Open Flavorlyst AI">✨</button>}
 
       <nav className="bottom-nav"><Nav icon="⌂" label="Home" active={view==="home"} onClick={()=>setView("home")}/><Nav icon="⌕" label="Explore" active={view==="explore"} onClick={()=>setView("explore")}/><button className="add-nav" onClick={()=>setView("add")}>＋</button><Nav icon="▣" label="Planner" active={view==="planner"} onClick={()=>setView("planner")}/><Nav icon="♡" label="Saved" active={view==="saved"} onClick={()=>setView("saved")}/></nav>
     </div>
