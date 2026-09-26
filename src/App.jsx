@@ -337,7 +337,7 @@ function App() {
 
       {view==="home" && <main className="home-page">
         <section className="hero" style={{backgroundImage:`linear-gradient(90deg,rgba(12,21,16,.9),rgba(12,21,16,.2)),url(${hero.image})`}}>
-          <div className="hero-content"><span className="eyebrow">WELCOME TO TABLELY</span><h1>Good food starts with a great idea.</h1><p>Discover recipes, save favorites, and plan your week.</p><div className="hero-actions"><button className="primary" onClick={()=>setView("explore")}>Explore recipes</button><button className="glass" onClick={()=>setView("add")}>＋ Add a recipe</button></div></div>
+          <div className="hero-content"><span className="eyebrow">WELCOME TO FLAVORLYST</span><h1>Good food starts with a great idea.</h1><p>Discover recipes, save favorites, and plan your week.</p><div className="hero-actions"><button className="primary" onClick={()=>setView("explore")}>Explore recipes</button><button className="glass" onClick={()=>setView("add")}>＋ Add a recipe</button></div></div>
         </section>
         <section className="section"><div className="section-head"><div><span className="eyebrow dark">DISCOVER</span><h2>What are you craving?</h2></div><button className="text-btn" onClick={()=>setView("explore")}>See all →</button></div>
           <div className="chips">{categories.map(c=><button className={category===c?"chip active":"chip"} key={c} onClick={()=>{setCategory(c);setView("explore")}}>{c}</button>)}</div>
