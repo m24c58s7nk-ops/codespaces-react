@@ -187,26 +187,44 @@ function App() {
     update("recipe-ratings",next,setRatings);
   };
   const localRecipeCheck = (recipe, ingredients, steps) => {
-    const title = (recipe.title || "").trim();
-    const polishedTitle = title.replace(/\s+/g, " ").replace(/(^|[.!?]\s+)([a-z])/g, (_, p, ch) => p + ch.toUpperCase());
-    const description = (recipe.description || "").trim().replace(/\s+/g, " ");
-    const valid = polishedTitle.length >= 3 && ingredients.length >= 2 && steps.length >= 2;
+    const clean = text => text.trim().replace(/\s+/g, " ");
+    const title = clean(recipe.title || "");
+    const description = clean(recipe.description || "");
+    const ingredientNames = ingredients.map(i => clean(i.n).toLowerCase()).filter(Boolean);
+    const stepText = steps.map(clean).filter(Boolean);
+    const titleWords = title.toLowerCase().split(/\s+/).filter(Boolean);
+
+    const foodWords = /chicken|beef|pork|turkey|bacon|ham|sausage|salmon|tuna|shrimp|fish|steak|pasta|noodle|rice|potato|bread|toast|sandwich|soup|salad|pizza|taco|burrito|curry|pancake|waffle|cake|cookie|brownie|muffin|oatmeal|egg|cheese|chocolate|apple|banana|berry|berries|tomato|bean|beans|lentil|vegetable|avocado|yogurt|smoothie|chili|stew|casserole|lasagna|burger|wrap|chicken|garlic|lemon/.test((title + " " + ingredientNames.join(" ")).toLowerCase());
+
+    const nonsense = /^(asdf|qwerty|test|hello|blah|lorem|abc|123)+$/i.test(title.replace(/\s/g, ""));
+    const hasQuantity = ingredients.some(i => Number(i.q) > 0);
+    const hasAction = stepText.some(s => /add|mix|stir|cook|bake|boil|fry|heat|bowl|serve|chop|slice|blend|whisk|combine|season|place|pour|toast|grill|roast|preheat/i.test(s));
+
+    const valid = title.length >= 3 &&
+      ingredients.length >= 2 &&
+      stepText.length >= 2 &&
+      hasQuantity &&
+      hasAction &&
+      foodWords &&
+      !nonsense;
+
+    const polishedTitle = title
+      .replace(/\s+/g, " ")
+      .replace(/(^|[.!?]\s+)([a-z])/g, (_, p, ch) => p + ch.toUpperCase());
+
     return {
       valid,
-      reason: valid ? "Basic recipe check passed." : "Add a recipe title, at least two ingredients, and at least two steps.",
+      reason: valid ? "Recipe check passed." : "Please enter a real, coherent recipe with a food title, at least two ingredients, quantities, and at least two cooking steps.",
       title: polishedTitle,
       description,
       category: recipe.category,
       time: Number(recipe.time) || 30,
       difficulty: "Easy",
       servings: Number(recipe.servings) || 2,
-      story: "This recipe was shared by a Flavorlyst home cook. Every good recipe starts with a simple idea and becomes a story when it reaches the table.",
-      tags: [],
-      ingredients,
-      steps: steps.map(s => {
-        const text = s.trim().replace(/\s+/g, " ");
-        return text ? text.charAt(0).toUpperCase() + text.slice(1).replace(/(?<![.!?])$/, ".") : text;
-      })
+      story: buildRecipeStory(polishedTitle, recipe.category),
+      tags: titleWords.slice(0, 4),
+      ingredients: ingredients.map(i => ({...i, n: clean(i.n)})),
+      steps: stepText.map(s => s.charAt(0).toUpperCase() + s.slice(1).replace(/(?<![.!?])$/, "."))
     };
   };
 
@@ -215,129 +233,52 @@ function App() {
     return `This Flavorlyst recipe, ${title}, was made for a ${meal} when you want something delicious without overcomplicating the kitchen. It brings familiar ingredients together in a simple way that is easy to make, share, and remember.`;
   };
 
-  const createRecipe = async e => {
+  const createRecipe = e => {
     e.preventDefault();
     if (aiStatus === "Checking recipe…") return;
 
     setAiStatus("Checking recipe…");
-    try {
-      const parsedIngredients = newRecipe.ingredients.split("\n").map(line => {
-        const p = line.split("|");
-        return { q: Number(p[0]) || 1, u: p[1]?.trim() || "", n: p[2]?.trim() || p[0]?.trim() || line.trim() };
-      }).filter(i => i.n);
 
-      const parsedSteps = newRecipe.steps.split("\n").map(s => s.trim()).filter(Boolean);
+    const parsedIngredients = newRecipe.ingredients.split("\n").map(line => {
+      const p = line.split("|");
+      return { q: Number(p[0]) || 1, u: p[1]?.trim() || "", n: p[2]?.trim() || p[0]?.trim() || line.trim() };
+    }).filter(i => i.n);
 
-      // Run AI validation and photo search together. The whole check has a 55-second cap.
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 55000);
+    const parsedSteps = newRecipe.steps.split("\n").map(s => s.trim()).filter(Boolean);
+    const checked = localRecipeCheck(newRecipe, parsedIngredients, parsedSteps);
 
-      const aiPromise = fetch(`${AI_API_BASE}/api/recipe-ai`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: controller.signal,
-        body: JSON.stringify({
-          title: newRecipe.title,
-          description: newRecipe.description,
-          category: newRecipe.category,
-          time: Number(newRecipe.time) || 30,
-          servings: Number(newRecipe.servings) || 2,
-          ingredients: parsedIngredients,
-          steps: parsedSteps
-        })
-      });
-
-      let imagePromise = Promise.resolve(null);
-      if (!newRecipe.image.trim()) {
-        imagePromise = fetch(`${AI_API_BASE}/api/recipe-image`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
-          body: JSON.stringify({
-            title: newRecipe.title,
-            ingredients: parsedIngredients,
-            category: newRecipe.category
-          })
-        }).catch(() => null);
-      }
-
-      const [aiResponse, imageResponse] = await Promise.all([aiPromise, imagePromise]);
-      clearTimeout(timeout);
-      if (!aiResponse.ok) throw new Error("AI service unavailable");
-      const polished = await aiResponse.json();
-
-      if (!polished.valid) {
-        setAiStatus("⚠️ This doesn't look like a complete, legitimate recipe yet. Please fix the highlighted content and try again.");
-        return;
-      }
-
-      let image = newRecipe.image.trim();
-      if (!image && imageResponse?.ok) {
-        const imageData = await imageResponse.json();
-        image = imageData.url || "";
-      }
-
-      const recipe = {
-        id:"u-"+Date.now(),
-        title:polished.title,
-        description:polished.description,
-        category:polished.category,
-        time:Number(polished.time)||30,
-        difficulty:polished.difficulty || "Easy",
-        servings:Number(polished.servings)||2,
-        rating:0,
-        ratingCount:0,
-        author:"You",
-        story: buildRecipeStory(polished.title, polished.category),
-        image:image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
-        tags:Array.isArray(polished.tags) ? polished.tags : [],
-        ingredients:Array.isArray(polished.ingredients) ? polished.ingredients : parsedIngredients,
-        steps:Array.isArray(polished.steps) ? polished.steps : parsedSteps
-      };
-
-      const next=[recipe,...recipes];
-      update("recipe-recipes",next,setRecipes);
-      setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
-      setAiStatus("");
-      setSelected(recipe.id);
-      setServings(recipe.servings);
-      setView("recipe");
-    } catch (error) {
-      // GitHub Pages cannot run the /api serverless functions. Keep the app usable
-      // with a local safety/format check until a backend URL is configured.
-      const local = localRecipeCheck(newRecipe, parsedIngredients, parsedSteps);
-      if (!local.valid) {
-        setAiStatus("⚠️ " + local.reason);
-        return;
-      }
-
-      const recipe = {
-        id:"u-"+Date.now(),
-        title:local.title,
-        description:local.description,
-        category:local.category,
-        time:local.time,
-        difficulty:local.difficulty,
-        servings:local.servings,
-        rating:0,
-        ratingCount:0,
-        author:"You",
-        story:local.story,
-        image:newRecipe.image.trim() || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
-        tags:local.tags,
-        ingredients:local.ingredients,
-        steps:local.steps
-      };
-
-      const next=[recipe,...recipes];
-      update("recipe-recipes",next,setRecipes);
-      setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
-      setAiStatus("Recipe saved with the local format check. Connect the AI backend to enable full AI validation and automatic image search.");
-      setSelected(recipe.id);
-      setServings(recipe.servings);
-      setView("recipe");
+    if (!checked.valid) {
+      setAiStatus("⚠️ " + checked.reason);
+      return;
     }
+
+    const recipe = {
+      id:"u-"+Date.now(),
+      title:checked.title,
+      description:checked.description,
+      category:checked.category,
+      time:checked.time,
+      difficulty:checked.difficulty,
+      servings:checked.servings,
+      rating:0,
+      ratingCount:0,
+      author:"You",
+      story:checked.story,
+      image:newRecipe.image.trim() || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
+      tags:checked.tags,
+      ingredients:checked.ingredients,
+      steps:checked.steps
+    };
+
+    const next=[recipe,...recipes];
+    update("recipe-recipes",next,setRecipes);
+    setNewRecipe({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
+    setAiStatus("");
+    setSelected(recipe.id);
+    setServings(recipe.servings);
+    setView("recipe");
   };
+
   const scaledIngredients = selectedRecipe?.ingredients.map(i => ({...i, q:i.q*(servings/selectedRecipe.servings)}));
 
   const hero = recipes[0];
