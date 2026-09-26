@@ -330,7 +330,7 @@ function App() {
   return (
     <div className={darkMode ? "app dark-mode" : "app"}>
       <header className="topbar">
-        <button className="brand" onClick={()=>setView("home")}><span className="brand-mark">✦</span><span>Table<span className="brand-accent">ly</span></span></button>
+        <button className="brand" onClick={()=>setView("home")}><span className="brand-mark">✦</span><span>Flavor<span className="brand-accent">lyst</span></span></button>
         <div className="desktop-search"><span>⌕</span><input value={search} onChange={e=>{setSearch(e.target.value);setView("explore")}} placeholder="Search recipes, ingredients..." /></div>
         <button className="theme-btn" onClick={() => { const next = !darkMode; setDarkMode(next); save("flavorlyst-dark-mode", next); }} aria-label="Toggle dark mode">{darkMode ? "☀" : "☾"}</button><button className="install-btn" onClick={()=>setShowInstall(true)}>Install App</button>
       </header>
