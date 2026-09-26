@@ -232,6 +232,35 @@ function App() {
     return `This Flavorlyst recipe, ${title}, was made for a ${meal} when you want something delicious without overcomplicating the kitchen. It brings familiar ingredients together in a simple way that is easy to make, share, and remember.`;
   };
 
+  const recipeImageChoices = [
+    { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
+    { words: /chicken|turkey|beef|steak|pork|sausage|burger|meat/i, image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85" },
+    { words: /salmon|tuna|shrimp|fish|seafood/i, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85" },
+    { words: /salad|vegetable|veggie|greens|avocado/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
+    { words: /soup|stew|chili/i, image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85" },
+    { words: /pancake|waffle|french toast|oatmeal|breakfast|toast|egg/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" },
+    { words: /cake|cookie|brownie|muffin|dessert|chocolate/i, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=85" },
+    { words: /rice|curry|taco|burrito|enchilada|teriyaki/i, image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85" }
+  ];
+
+  const getAutomaticRecipeImage = (title, ingredients) => {
+    const searchText = (title + " " + ingredients.map(i => i.n).join(" ")).toLowerCase();
+    const match = recipeImageChoices.find(choice => choice.words.test(searchText));
+    return match?.image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85";
+  };
+
+  const isAppropriateRecipeImageUrl = value => {
+    if (!value) return true;
+    try {
+      const url = new URL(value);
+      const allowedHost = /(^|\.)images\.unsplash\.com$/i.test(url.hostname);
+      const blockedText = /porn|xxx|nsfw|nude|nudity|sex|violence|gore|blood|weapon|gun|drug|cocaine|marijuana|alcohol|beer|wine|casino|gambling/i.test(value);
+      return url.protocol === "https:" && allowedHost && !blockedText;
+    } catch {
+      return false;
+    }
+  };
+
   const createRecipe = e => {
     e.preventDefault();
     if (aiStatus === "Checking recipe…") return;
@@ -251,6 +280,14 @@ function App() {
       return;
     }
 
+    const suppliedImage = newRecipe.image.trim();
+    if (suppliedImage && !isAppropriateRecipeImageUrl(suppliedImage)) {
+      setAiStatus("⚠️ That photo URL isn't an accepted food-image source. Leave it blank and Flavorlyst will choose a safe food photo automatically.");
+      return;
+    }
+
+    const selectedImage = suppliedImage || getAutomaticRecipeImage(checked.title, checked.ingredients);
+
     const recipe = {
       id:"u-"+Date.now(),
       title:checked.title,
@@ -263,7 +300,7 @@ function App() {
       ratingCount:0,
       author:"You",
       story:checked.story,
-      image:newRecipe.image.trim() || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
+      image:selectedImage,
       tags:checked.tags,
       ingredients:checked.ingredients,
       steps:checked.steps
@@ -320,7 +357,7 @@ function App() {
         <aside><section className="side-card"><h3>Rate this recipe</h3><div className="stars">{[1,2,3,4,5].map(n=><button key={n} className={ratings[selectedRecipe.id]>=n?"star chosen":"star"} onClick={()=>rate(n)}>★</button>)}</div><p>{ratings[selectedRecipe.id] ? `You rated it ${ratings[selectedRecipe.id]}/5` : "Tap a star to rate"}</p></section><section className="side-card"><h3>Comments</h3><div className="comment-list">{(comments[selectedRecipe.id]||[]).map(c=><div className="comment" key={c.id}><b>{c.author}</b><small>{c.date}</small><p>{c.text}</p></div>)}</div><textarea value={commentText} onChange={e=>setCommentText(e.target.value)} placeholder="Share what you thought..."/><button className="primary full" onClick={addComment}>Post comment</button></section></aside></div>
       </main>}
 
-      {view==="add" && <main className="page narrow"><div className="page-title"><span className="eyebrow dark">CREATE</span><h1>Add your recipe</h1><p>Share something delicious with the community.</p></div><form className="form-card" onSubmit={createRecipe}><label>Recipe title<input required value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} placeholder="e.g. Grandma's Sunday Lasagna"/></label><label>Recipe photo URL<input value={newRecipe.image} onChange={e=>setNewRecipe({...newRecipe,image:e.target.value})} placeholder="Paste an image URL for the recipe background"/></label><div className="two"><label>Category<select value={newRecipe.category} onChange={e=>setNewRecipe({...newRecipe,category:e.target.value})}><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></label><label>Servings<input type="number" min="1" value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})}/></label></div><label>Description<textarea value={newRecipe.description} onChange={e=>setNewRecipe({...newRecipe,description:e.target.value})} placeholder="What makes this recipe special?"/></label><label>Ingredients <small>One per line: quantity | unit | ingredient</small><textarea required value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} placeholder={"2 | cups | flour\n1 | tsp | salt\n3 | | eggs"}/></label><label>Steps <small>One step per line</small><textarea required value={newRecipe.steps} onChange={e=>setNewRecipe({...newRecipe,steps:e.target.value})} placeholder={"Mix the ingredients.\nBake until golden.\nServe warm."}/></label><button className="primary big" type="submit" disabled={aiStatus==="Checking recipe…"}>{aiStatus==="Checking recipe…" ? "✨ AI is checking…" : "✨ Check recipe with AI & publish"}</button>{aiStatus && <p className="ai-status">{aiStatus}</p>}</form></main>}
+      {view==="add" && <main className="page narrow"><div className="page-title"><span className="eyebrow dark">CREATE</span><h1>Add your recipe</h1><p>Share something delicious with the community.</p></div><form className="form-card" onSubmit={createRecipe}><label>Recipe title<input required value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} placeholder="e.g. Grandma's Sunday Lasagna"/></label><label>Recipe photo URL <small>Optional — leave blank and Flavorlyst will choose a food photo automatically.</small><input value={newRecipe.image} onChange={e=>setNewRecipe({...newRecipe,image:e.target.value})} placeholder="Optional: paste an Unsplash food-image URL"/></label><div className="two"><label>Category<select value={newRecipe.category} onChange={e=>setNewRecipe({...newRecipe,category:e.target.value})}><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></label><label>Servings<input type="number" min="1" value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})}/></label></div><label>Description<textarea value={newRecipe.description} onChange={e=>setNewRecipe({...newRecipe,description:e.target.value})} placeholder="What makes this recipe special?"/></label><label>Ingredients <small>One per line: quantity | unit | ingredient</small><textarea required value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} placeholder={"2 | cups | flour\n1 | tsp | salt\n3 | | eggs"}/></label><label>Steps <small>One step per line</small><textarea required value={newRecipe.steps} onChange={e=>setNewRecipe({...newRecipe,steps:e.target.value})} placeholder={"Mix the ingredients.\nBake until golden.\nServe warm."}/></label><button className="primary big" type="submit" disabled={aiStatus==="Checking recipe…"}>{aiStatus==="Checking recipe…" ? "✨ AI is checking…" : "✨ Check recipe with AI & publish"}</button>{aiStatus && <p className="ai-status">{aiStatus}</p>}</form></main>}
 
       {view==="planner" && <main className="page"><div className="page-title"><span className="eyebrow dark">PLAN AHEAD</span><h1>Weekly meal planner</h1><p>Build your week with your favorite recipes.</p></div><div className="planner">{Object.entries(planner).map(([day,id])=><div className="day" key={day}><b>{day}</b>{id ? <div className="planned" style={{backgroundImage:`linear-gradient(0deg,rgba(0,0,0,.62),transparent),url(${recipes.find(r=>r.id===id)?.image})`}}><span>{recipes.find(r=>r.id===id)?.title}</span><button onClick={()=>{const next={...planner,[day]:null};update("recipe-planner",next,setPlanner)}}>×</button></div> : <select value="" onChange={e=>{const next={...planner,[day]:e.target.value};update("recipe-planner",next,setPlanner)}}><option value="">＋ Add recipe</option>{recipes.map(r=><option key={r.id} value={r.id}>{r.title}</option>)}</select>}</div>)}</div></main>}
 
