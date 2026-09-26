@@ -9,38 +9,19 @@ export default async function handler(req, res) {
 
   try {
     const recipe = req.body || {};
-    const prompt = `You are the quality-control editor for a recipe app.
+    const prompt = `You are Flavorlyst's fast recipe quality checker.
 
-Check whether this submission is a genuine, coherent food recipe rather than gibberish, spam, a joke with no usable cooking instructions, or unrelated text.
+Decide whether the submission is a real, coherent food recipe or gibberish/spam/unrelated text.
+Valid means: recognizable food, at least 2 sensible ingredients, at least 2 coherent steps, and the ingredients/steps fit the dish.
 
-A valid recipe should have:
-- a recognizable edible dish or food preparation
-- at least 2 sensible ingredients
-- at least 2 coherent preparation steps
-- ingredients and steps that make culinary sense together
-- no obvious contradiction between the title, ingredients, and steps
+If valid, make only small grammar, spelling, capitalization, punctuation, and clarity fixes. Do not change the dish or invent major ingredients.
 
-If valid, polish grammar, spelling, capitalization, punctuation, and clarity. Do not turn it into a different dish or invent major ingredients. You may make small wording and formatting corrections.
+Return ONLY JSON:
+{"valid":true,"reason":"short","title":"...","description":"...","category":"Breakfast|Lunch|Dinner","time":30,"difficulty":"Easy|Medium|Hard","servings":2,"story":"short entertaining background","tags":["tag"],"ingredients":[{"q":1,"u":"cup","n":"flour"}],"steps":["Step one.","Step two."]}
 
-Return ONLY valid JSON with this exact shape:
-{
-  "valid": true,
-  "reason": "short explanation",
-  "title": "polished title",
-  "description": "polished description",
-  "category": "Breakfast|Lunch|Dinner",
-  "time": 30,
-  "difficulty": "Easy|Medium|Hard",
-  "servings": 2,
-  "story": "short entertaining background for the recipe",
-  "tags": ["tag1","tag2"],
-  "ingredients": [{"q":1,"u":"cup","n":"flour"}],
-  "steps": ["Step one.","Step two."]
-}
+If invalid, return the same shape with valid=false and a short reason.
 
-If invalid, set "valid" to false and explain the problem in "reason".
-
-Recipe submission:
+Submission:
 ${JSON.stringify(recipe)}
 `;
 
@@ -52,6 +33,8 @@ ${JSON.stringify(recipe)}
       },
       body: JSON.stringify({
         model: process.env.OPENAI_RECIPE_MODEL || "gpt-5.6-luna",
+        reasoning: { effort: "none" },
+        max_output_tokens: 1200,
         input: prompt
       })
     });
