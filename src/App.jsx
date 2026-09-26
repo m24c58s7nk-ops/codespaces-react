@@ -210,6 +210,11 @@ function App() {
     };
   };
 
+  const buildRecipeStory = (title, category) => {
+    const meal = category === "Breakfast" ? "morning" : category === "Lunch" ? "midday" : "dinner";
+    return `This Flavorlyst recipe, ${title}, was made for a ${meal} when you want something delicious without overcomplicating the kitchen. It brings familiar ingredients together in a simple way that is easy to make, share, and remember.`;
+  };
+
   const createRecipe = async e => {
     e.preventDefault();
     if (aiStatus === "Checking recipe…") return;
@@ -223,10 +228,14 @@ function App() {
 
       const parsedSteps = newRecipe.steps.split("\n").map(s => s.trim()).filter(Boolean);
 
-      // Run AI validation and photo search together to reduce total wait time.
+      // Run AI validation and photo search together. The whole check has a 55-second cap.
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 55000);
+
       const aiPromise = fetch(`${AI_API_BASE}/api/recipe-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           title: newRecipe.title,
           description: newRecipe.description,
@@ -243,6 +252,7 @@ function App() {
         imagePromise = fetch(`${AI_API_BASE}/api/recipe-image`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({
             title: newRecipe.title,
             ingredients: parsedIngredients,
@@ -252,6 +262,7 @@ function App() {
       }
 
       const [aiResponse, imageResponse] = await Promise.all([aiPromise, imagePromise]);
+      clearTimeout(timeout);
       if (!aiResponse.ok) throw new Error("AI service unavailable");
       const polished = await aiResponse.json();
 
@@ -277,7 +288,7 @@ function App() {
         rating:0,
         ratingCount:0,
         author:"You",
-        story: polished.story,
+        story: buildRecipeStory(polished.title, polished.category),
         image:image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85",
         tags:Array.isArray(polished.tags) ? polished.tags : [],
         ingredients:Array.isArray(polished.ingredients) ? polished.ingredients : parsedIngredients,
