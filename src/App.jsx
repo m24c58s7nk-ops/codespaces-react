@@ -223,7 +223,8 @@ function App() {
 
       const parsedSteps = newRecipe.steps.split("\n").map(s => s.trim()).filter(Boolean);
 
-      const aiResponse = await fetch(`${AI_API_BASE}/api/recipe-ai`, {
+      // Run AI validation and photo search together to reduce total wait time.
+      const aiPromise = fetch(`${AI_API_BASE}/api/recipe-ai`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -237,6 +238,20 @@ function App() {
         })
       });
 
+      let imagePromise = Promise.resolve(null);
+      if (!newRecipe.image.trim()) {
+        imagePromise = fetch(`${AI_API_BASE}/api/recipe-image`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: newRecipe.title,
+            ingredients: parsedIngredients,
+            category: newRecipe.category
+          })
+        }).catch(() => null);
+      }
+
+      const [aiResponse, imageResponse] = await Promise.all([aiPromise, imagePromise]);
       if (!aiResponse.ok) throw new Error("AI service unavailable");
       const polished = await aiResponse.json();
 
@@ -246,21 +261,9 @@ function App() {
       }
 
       let image = newRecipe.image.trim();
-      if (!image) {
-        setAiStatus("Recipe looks good. Finding a food photo…");
-        const imageResponse = await fetch(`${AI_API_BASE}/api/recipe-image`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title: polished.title,
-            ingredients: polished.ingredients,
-            category: polished.category
-          })
-        });
-        if (imageResponse.ok) {
-          const imageData = await imageResponse.json();
-          image = imageData.url || "";
-        }
+      if (!image && imageResponse?.ok) {
+        const imageData = await imageResponse.json();
+        image = imageData.url || "";
       }
 
       const recipe = {
