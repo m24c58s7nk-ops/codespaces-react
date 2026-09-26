@@ -164,3 +164,5 @@ jobs:
           git add src/App.jsx src/App.css .github/workflows/repair-recipe-images.yml
           git commit -m "Repair recipe images" || exit 0
           git push
+
+# trigger repair
