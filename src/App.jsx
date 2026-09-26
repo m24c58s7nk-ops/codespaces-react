@@ -128,7 +128,6 @@ function App() {
   const [favorites, setFavorites] = useState(() => load("recipe-favorites", ["r1","r5"]));
   const [planner, setPlanner] = useState(() => load("recipe-planner", initialPlanner));
   const [ratings, setRatings] = useState(() => load("recipe-ratings", {}));
-  const [comments, setComments] = useState(() => load("recipe-comments", {}));
   const [view, setView] = useState("home");
   const [selected, setSelected] = useState(null);
   const [search, setSearch] = useState("");
@@ -139,7 +138,6 @@ function App() {
   const [sortFilter, setSortFilter] = useState("Recommended");
   const [showFilters, setShowFilters] = useState(false);
   const [servings, setServings] = useState(2);
-  const [commentText, setCommentText] = useState("");
   const [showInstall, setShowInstall] = useState(false);
   const [darkMode, setDarkMode] = useState(() => load("flavorlyst-dark-mode", false));
   const [newRecipe, setNewRecipe] = useState({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
@@ -174,11 +172,6 @@ function App() {
   const toggleFavorite = id => {
     const next = favorites.includes(id) ? favorites.filter(x=>x!==id) : [...favorites,id];
     update("recipe-favorites", next, setFavorites);
-  };
-  const addComment = () => {
-    if (!selectedRecipe || !commentText.trim()) return;
-    const next = {...comments, [selectedRecipe.id]: [...(comments[selectedRecipe.id]||[]), {id:crypto.randomUUID(),text:commentText.trim(),author:"You",date:new Date().toLocaleDateString()}]};
-    update("recipe-comments",next,setComments); setCommentText("");
   };
   const rate = value => {
     if (!selectedRecipe) return;
@@ -354,7 +347,7 @@ function App() {
       {view==="recipe" && selectedRecipe && <main className="recipe-page">
         <div className="recipe-cover" style={{backgroundImage:`linear-gradient(0deg,rgba(8,12,10,.78),rgba(8,12,10,.05)),url(${selectedRecipe.image})`}}><button className="back" onClick={()=>setView("home")}>← Back</button><div className="cover-bottom"><span className="pill">{selectedRecipe.category}</span><h1>{selectedRecipe.title}</h1><p>By {selectedRecipe.author} · ★ {selectedRecipe.rating || "New"} {selectedRecipe.ratingCount ? `(${selectedRecipe.ratingCount})` : ""}</p></div></div>
         <div className="recipe-layout"><div><section className="recipe-card story-card"><span className="eyebrow dark">THE STORY BEHIND IT</span><h2>A little history with your meal</h2><p>{selectedRecipe.story || `Every recipe has a story. This one was created by ${selectedRecipe.author || "a home cook"} and shared with the Flavorlyst community as a recipe worth passing along.`}</p></section><section className="recipe-card"><div className="card-head"><h2>Ingredients</h2></div><div className="servings"><span>Servings</span><button onClick={()=>setServings(Math.max(1,servings-1))}>−</button><b>{servings}</b><button onClick={()=>setServings(servings+1)}>＋</button><small>Scaled automatically</small></div><ul className="ingredients">{scaledIngredients.map((i,idx)=><li key={idx}><b>{Number.isInteger(i.q)?i.q:i.q.toFixed(1)}</b><span>{i.u}</span><span>{i.n}</span></li>)}</ul></section><section className="recipe-card"><h2>How to make it</h2><div className="steps">{selectedRecipe.steps.map((s,i)=><div className="step" key={i}><span>{i+1}</span><p>{s}</p></div>)}</div></section></div>
-        <aside><section className="side-card"><h3>Rate this recipe</h3><div className="stars">{[1,2,3,4,5].map(n=><button key={n} className={ratings[selectedRecipe.id]>=n?"star chosen":"star"} onClick={()=>rate(n)}>★</button>)}</div><p>{ratings[selectedRecipe.id] ? `You rated it ${ratings[selectedRecipe.id]}/5` : "Tap a star to rate"}</p></section><section className="side-card"><h3>Comments</h3><div className="comment-list">{(comments[selectedRecipe.id]||[]).map(c=><div className="comment" key={c.id}><b>{c.author}</b><small>{c.date}</small><p>{c.text}</p></div>)}</div><textarea value={commentText} onChange={e=>setCommentText(e.target.value)} placeholder="Share what you thought..."/><button className="primary full" onClick={addComment}>Post comment</button></section></aside></div>
+        <aside><section className="side-card"><h3>Rate this recipe</h3><div className="stars">{[1,2,3,4,5].map(n=><button key={n} className={ratings[selectedRecipe.id]>=n?"star chosen":"star"} onClick={()=>rate(n)}>★</button>)}</div><p>{ratings[selectedRecipe.id] ? `You rated it ${ratings[selectedRecipe.id]}/5` : "Tap a star to rate"}</p></section></aside></div>
       </main>}
 
       {view==="add" && <main className="page narrow"><div className="page-title"><span className="eyebrow dark">CREATE</span><h1>Add your recipe</h1><p>Share something delicious with the community.</p></div><form className="form-card" onSubmit={createRecipe}><label>Recipe title<input required value={newRecipe.title} onChange={e=>setNewRecipe({...newRecipe,title:e.target.value})} placeholder="e.g. Grandma's Sunday Lasagna"/></label><label>Recipe photo URL <small>Optional — leave blank and Flavorlyst will choose a food photo automatically.</small><input value={newRecipe.image} onChange={e=>setNewRecipe({...newRecipe,image:e.target.value})} placeholder="Optional: paste an Unsplash food-image URL"/></label><div className="two"><label>Category<select value={newRecipe.category} onChange={e=>setNewRecipe({...newRecipe,category:e.target.value})}><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select></label><label>Servings<input type="number" min="1" value={newRecipe.servings} onChange={e=>setNewRecipe({...newRecipe,servings:e.target.value})}/></label></div><label>Description<textarea value={newRecipe.description} onChange={e=>setNewRecipe({...newRecipe,description:e.target.value})} placeholder="What makes this recipe special?"/></label><label>Ingredients <small>One per line: quantity | unit | ingredient</small><textarea required value={newRecipe.ingredients} onChange={e=>setNewRecipe({...newRecipe,ingredients:e.target.value})} placeholder={"2 | cups | flour\n1 | tsp | salt\n3 | | eggs"}/></label><label>Steps <small>One step per line</small><textarea required value={newRecipe.steps} onChange={e=>setNewRecipe({...newRecipe,steps:e.target.value})} placeholder={"Mix the ingredients.\nBake until golden.\nServe warm."}/></label><button className="primary big" type="submit" disabled={aiStatus==="Checking recipe…"}>{aiStatus==="Checking recipe…" ? "✨ AI is checking…" : "✨ Check recipe with AI & publish"}</button>{aiStatus && <p className="ai-status">{aiStatus}</p>}</form></main>}
