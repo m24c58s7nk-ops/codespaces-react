@@ -168,7 +168,7 @@ const curatedStarterRecipeImages = {
 };
 
 const recipeImageChoices = [
-  { words: /avocado toast/i, image: "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85" },
+  { words: /avocado toast/i, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85" },
   { words: /pancake/i, image: "https://images.unsplash.com/photo-1650134973809-d8c3a2da59ba?auto=format&fit=crop&w=1200&q=85" },
   { words: /french toast/i, image: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=1200&q=85" },
   { words: /waffle/i, image: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=1200&q=85" },
