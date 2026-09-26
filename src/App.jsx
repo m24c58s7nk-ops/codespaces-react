@@ -145,10 +145,10 @@ const curatedStarterRecipeImages = {
   "r34": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
   "r35": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=1200&q=85",
   "r36": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
-  "r37": "https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=85",
+  "r37": "https://images.unsplash.com/photo-1760504526069-ff0f8bf6e4ca?auto=format&fit=crop&w=1200&q=85",
   "r38": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85",
   "r39": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=85",
-  "r40": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
+  "r40": "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85",
   "r41": "https://images.unsplash.com/photo-1552332386-f8dd00dc8f85?auto=format&fit=crop&w=1200&q=85",
   "r42": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
   "r43": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
@@ -168,23 +168,24 @@ const curatedStarterRecipeImages = {
 };
 
 const recipeImageChoices = [
-  { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi|shells/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
-  { words: /chicken|turkey|pork|sausage|meat|steak|beef/i, image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85" },
-  { words: /salmon|tuna|shrimp|fish|seafood/i, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85" },
-  { words: /salad|vegetable|veggie|greens|avocado|cucumber|couscous|hummus/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
-  { words: /soup|stew|chili/i, image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85" },
+  { words: /avocado toast/i, image: "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85" },
   { words: /pancake/i, image: "https://images.unsplash.com/photo-1650134973809-d8c3a2da59ba?auto=format&fit=crop&w=1200&q=85" },
   { words: /french toast/i, image: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=1200&q=85" },
   { words: /waffle/i, image: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=1200&q=85" },
   { words: /oatmeal|porridge/i, image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85" },
   { words: /smoothie/i, image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=1200&q=85" },
-  { words: /avocado toast/i, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85" },
-  { words: /toast|egg/i, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85" },
+  { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi|shells/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
+  { words: /salmon|tuna|shrimp|fish|seafood/i, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85" },
+  { words: /soup|stew|chili/i, image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85" },
+  { words: /salad|cucumber|greens|hummus|couscous/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
+  { words: /chicken|turkey|pork|sausage|steak|beef|meat/i, image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85" },
   { words: /burrito|quesadilla|enchilada|taco/i, image: "https://images.unsplash.com/photo-1552332386-f8dd00dc8f85?auto=format&fit=crop&w=1200&q=85" },
-  { words: /curry/i, image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85" },
-  { words: /rice|bowl|teriyaki/i, image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=85" },
+  { words: /curry/i, image: "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85" },
+  { words: /rice|teriyaki|bowl/i, image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=85" },
   { words: /sandwich|wrap|pita/i, image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7b?auto=format&fit=crop&w=1200&q=85" },
-  { words: /flatbread|pizza/i, image: "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1200&q=85" }
+  { words: /flatbread|pizza/i, image: "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1200&q=85" },
+  { words: /vegetable|veggie|avocado/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
+  { words: /toast|egg/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" }
 ];
 
 const getAutomaticRecipeImage = (title, ingredients = []) => {
@@ -196,13 +197,8 @@ const getAutomaticRecipeImage = (title, ingredients = []) => {
 const addMissingRecipeImages = list => Array.isArray(list)
   ? list.map(recipe => {
       if (!recipe) return recipe;
-      if (curatedStarterRecipeImages[recipe.id]) {
-        return {...recipe, image: curatedStarterRecipeImages[recipe.id]};
-      }
-      return recipe.image ? recipe : {
-        ...recipe,
-        image: getAutomaticRecipeImage(recipe.title || "", recipe.ingredients || [])
-      };
+      if (curatedStarterRecipeImages[recipe.id]) return {...recipe, image: curatedStarterRecipeImages[recipe.id]};
+      return recipe.image ? recipe : {...recipe, image: getAutomaticRecipeImage(recipe.title || "", recipe.ingredients || [])};
     })
   : list;
 
