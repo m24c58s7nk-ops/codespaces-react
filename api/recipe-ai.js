@@ -9,19 +9,19 @@ export default async function handler(req, res) {
 
   try {
     const recipe = req.body || {};
-    const prompt = `You are Flavorlyst's fast recipe quality checker.
+    const prompt = `You are Flavorlyst's fast recipe checker.
 
-Decide whether the submission is a real, coherent food recipe or gibberish/spam/unrelated text.
-Valid means: recognizable food, at least 2 sensible ingredients, at least 2 coherent steps, and the ingredients/steps fit the dish.
+Check whether this is a coherent food recipe, not gibberish or spam.
+Valid requires a recognizable dish, at least 2 sensible ingredients, at least 2 coherent steps, and ingredients/steps that fit together.
 
-If valid, make only small grammar, spelling, capitalization, punctuation, and clarity fixes. Do not change the dish or invent major ingredients.
+If valid, make only small grammar, spelling, capitalization, punctuation, and clarity fixes. Never change the dish or invent major ingredients.
 
-Return ONLY JSON:
-{"valid":true,"reason":"short","title":"...","description":"...","category":"Breakfast|Lunch|Dinner","time":30,"difficulty":"Easy|Medium|Hard","servings":2,"story":"short entertaining background","tags":["tag"],"ingredients":[{"q":1,"u":"cup","n":"flour"}],"steps":["Step one.","Step two."]}
+Return ONLY this JSON:
+{"valid":true,"reason":"short","title":"...","description":"...","category":"Breakfast|Lunch|Dinner","time":30,"difficulty":"Easy|Medium|Hard","servings":2,"ingredients":[{"q":1,"u":"cup","n":"flour"}],"steps":["Step one.","Step two."]}
 
 If invalid, return the same shape with valid=false and a short reason.
 
-Submission:
+Recipe:
 ${JSON.stringify(recipe)}
 `;
 
@@ -34,7 +34,7 @@ ${JSON.stringify(recipe)}
       body: JSON.stringify({
         model: process.env.OPENAI_RECIPE_MODEL || "gpt-5.6-luna",
         reasoning: { effort: "none" },
-        max_output_tokens: 1200,
+        max_output_tokens: 700,
         input: prompt
       })
     });
