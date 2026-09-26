@@ -111,87 +111,98 @@ const starterRecipes = [
 const curatedStarterRecipeImages = {
   "r1": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
   "r2": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
-  "r3": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85",
+  "r3": "https://images.unsplash.com/photo-1623052935410-3fca63f73e10?auto=format&fit=crop&w=1200&q=85",
   "r4": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85",
   "r5": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85",
   "r6": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
   "r7": "https://images.unsplash.com/photo-1650134973809-d8c3a2da59ba?auto=format&fit=crop&w=1200&q=85",
-  "r8": "https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=1200&q=85",
+  "r8": "https://images.unsplash.com/photo-1740555274750-2ced1ce0fdf3?auto=format&fit=crop&w=1200&q=85",
   "r9": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1200&q=85",
-  "r10": "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=1200&q=85",
-  "r11": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=85",
-  "r12": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85",
+  "r10": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85",
+  "r11": "https://images.unsplash.com/photo-1618798513386-fedeb5c30d39?auto=format&fit=crop&w=1200&q=85",
+  "r12": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85",
   "r13": "https://images.unsplash.com/photo-1510696512221-31c1f5e2f7f7?auto=format&fit=crop&w=1200&q=85",
   "r14": "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=1200&q=85",
-  "r15": "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=85",
+  "r15": "https://images.unsplash.com/photo-1712746785233-590cd63d6941?auto=format&fit=crop&w=1200&q=85",
   "r16": "https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=1200&q=85",
   "r17": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=85",
-  "r18": "https://images.unsplash.com/photo-1618040996337-56904b7850b9?auto=format&fit=crop&w=1200&q=85",
+  "r18": "https://images.unsplash.com/photo-1647545401800-bd8f77e670ed?auto=format&fit=crop&w=1200&q=85",
   "r19": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85",
   "r20": "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=1200&q=85",
-  "r21": "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85",
+  "r21": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85",
   "r22": "https://images.unsplash.com/photo-1528735602780-2552fd46c7b?auto=format&fit=crop&w=1200&q=85",
-  "r23": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
-  "r24": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
+  "r23": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
+  "r24": "https://images.unsplash.com/photo-1582034986517-30d163aa1da9?auto=format&fit=crop&w=1200&q=85",
   "r25": "https://images.unsplash.com/photo-1677511084683-0eba66ebaa7c?auto=format&fit=crop&w=1200&q=85",
-  "r26": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
+  "r26": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
   "r27": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85",
   "r28": "https://images.unsplash.com/photo-1528735602780-2552fd46c7b?auto=format&fit=crop&w=1200&q=85",
-  "r29": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
-  "r30": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=85",
-  "r31": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
+  "r29": "https://images.unsplash.com/photo-1528735602780-2552fd46c7b?auto=format&fit=crop&w=1200&q=85",
+  "r30": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
+  "r31": "https://images.unsplash.com/photo-1582034986517-30d163aa1da9?auto=format&fit=crop&w=1200&q=85",
   "r32": "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1200&q=85",
-  "r33": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
+  "r33": "https://images.unsplash.com/photo-1528735602780-2552fd46c7b?auto=format&fit=crop&w=1200&q=85",
   "r34": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
-  "r35": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=1200&q=85",
-  "r36": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
-  "r37": "https://images.unsplash.com/photo-1760504526069-ff0f8bf6e4ca?auto=format&fit=crop&w=1200&q=85",
-  "r38": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85",
+  "r35": "https://images.unsplash.com/photo-1644898955763-682dbe5127ac?auto=format&fit=crop&w=1200&q=85",
+  "r36": "https://images.unsplash.com/photo-1757715377671-01c20cfa1880?auto=format&fit=crop&w=1200&q=85",
+  "r37": "https://images.unsplash.com/photo-1606070781631-a7e961f84c9e?auto=format&fit=crop&w=1200&q=85",
+  "r38": "https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=1200&q=85",
   "r39": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=85",
   "r40": "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85",
   "r41": "https://images.unsplash.com/photo-1552332386-f8dd00dc8f85?auto=format&fit=crop&w=1200&q=85",
   "r42": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
   "r43": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
-  "r44": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85",
+  "r44": "https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=1200&q=85",
   "r45": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=85",
   "r46": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
-  "r47": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
+  "r47": "https://images.unsplash.com/photo-1552332386-f8dd00dc8f85?auto=format&fit=crop&w=1200&q=85",
   "r48": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
   "r49": "https://images.unsplash.com/photo-1572453800999-e8d2d1589b7a?auto=format&fit=crop&w=1200&q=85",
   "r50": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
   "r51": "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85",
   "r52": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
-  "r53": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
+  "r53": "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=85",
   "r54": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85",
-  "r55": "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85",
+  "r55": "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85",
   "r56": "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1200&q=85"
 };
 
 const recipeImageChoices = [
-  { words: /avocado toast/i, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85" },
-  { words: /pancake/i, image: "https://images.unsplash.com/photo-1650134973809-d8c3a2da59ba?auto=format&fit=crop&w=1200&q=85" },
-  { words: /french toast/i, image: "https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&w=1200&q=85" },
+  { words: /strawberry.*chia|chia.*pudding/i, image: "https://images.unsplash.com/photo-1618798513386-fedeb5c30d39?auto=format&fit=crop&w=1200&q=85" },
+  { words: /berry.*breakfast|breakfast.*berry/i, image: "https://images.unsplash.com/photo-1623052935410-3fca63f73e10?auto=format&fit=crop&w=1200&q=85" },
+  { words: /french toast/i, image: "https://images.unsplash.com/photo-1740555274750-2ced1ce0fdf3?auto=format&fit=crop&w=1200&q=85" },
+  { words: /quesadilla/i, image: "https://images.unsplash.com/photo-1647545401800-bd8f77e670ed?auto=format&fit=crop&w=1200&q=85" },
+  { words: /breakfast hash|hash/i, image: "https://images.unsplash.com/photo-1712746785233-590cd63d6941?auto=format&fit=crop&w=1200&q=85" },
+  { words: /blueberry.*pancake|pancake/i, image: "https://images.unsplash.com/photo-1650134973809-d8c3a2da59ba?auto=format&fit=crop&w=1200&q=85" },
   { words: /waffle/i, image: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=1200&q=85" },
   { words: /oatmeal|porridge/i, image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1200&q=85" },
   { words: /smoothie/i, image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&w=1200&q=85" },
-  { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi|shells/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
-  { words: /salmon|tuna|shrimp|fish|seafood/i, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85" },
-  { words: /soup|stew|chili/i, image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85" },
-  { words: /salad|cucumber|greens|hummus|couscous/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
+  { words: /avocado toast/i, image: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=85" },
+  { words: /peanut butter.*banana.*toast|banana.*toast/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" },
+  { words: /omelet|omelette/i, image: "https://images.unsplash.com/photo-1510696512221-31c1f5e2f7f7?auto=format&fit=crop&w=1200&q=85" },
+  { words: /greek yogurt parfait|parfait/i, image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=85" },
+  { words: /tomato.*egg.*toast|egg.*toast/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" },
+  { words: /caesar.*wrap|caesar.*salad/i, image: "https://images.unsplash.com/photo-1582034986517-30d163aa1da9?auto=format&fit=crop&w=1200&q=85" },
+  { words: /hummus bowl|hummus/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
+  { words: /garlic butter shrimp|shrimp/i, image: "https://images.unsplash.com/photo-1644898955763-682dbe5127ac?auto=format&fit=crop&w=1200&q=85" },
+  { words: /chicken tikka/i, image: "https://images.unsplash.com/photo-1757715377671-01c20cfa1880?auto=format&fit=crop&w=1200&q=85" },
+  { words: /beef.*broccoli|broccoli.*beef|stir.?fry/i, image: "https://images.unsplash.com/photo-1606070781631-a7e961f84c9e?auto=format&fit=crop&w=1200&q=85" },
+  { words: /pesto salmon|honey garlic salmon|salmon/i, image: "https://images.unsplash.com/photo-1574484284002-952d92456975?auto=format&fit=crop&w=1200&q=85" },
+  { words: /vegetable curry|chickpea curry|curry/i, image: "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85" },
+  { words: /taco|enchilada/i, image: "https://images.unsplash.com/photo-1552332386-f8dd00dc8f85?auto=format&fit=crop&w=1200&q=85" },
+  { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi|stuffed shells/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
+  { words: /salad|cucumber|greens|couscous|eggplant/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
   { words: /chicken|turkey|pork|sausage|steak|beef|meat/i, image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85" },
-  { words: /burrito|quesadilla|enchilada|taco/i, image: "https://images.unsplash.com/photo-1552332386-f8dd00dc8f85?auto=format&fit=crop&w=1200&q=85" },
-  { words: /curry/i, image: "https://images.unsplash.com/photo-1627906296851-6d9c5e4db592?auto=format&fit=crop&w=1200&q=85" },
   { words: /rice|teriyaki|bowl/i, image: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=1200&q=85" },
   { words: /sandwich|wrap|pita/i, image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7b?auto=format&fit=crop&w=1200&q=85" },
   { words: /flatbread|pizza/i, image: "https://images.unsplash.com/photo-1579751626657-72bc17010498?auto=format&fit=crop&w=1200&q=85" },
-  { words: /vegetable|veggie|avocado/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
   { words: /toast|egg/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" }
 ];
 
 const getAutomaticRecipeImage = (title, ingredients = []) => {
   const searchText = ((title || "") + " " + ingredients.map(i => i.n || "").join(" ")).toLowerCase();
   const match = recipeImageChoices.find(choice => choice.words.test(searchText));
-  return match?.image || "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85";
+  return match?.image || "https://images.unsplash.com/photo-1623052935410-3fca63f73e10?auto=format&fit=crop&w=1200&q=85";
 };
 
 const addMissingRecipeImages = list => Array.isArray(list)
@@ -440,7 +451,25 @@ function Nav({icon,label,active,onClick}) { return <button className={active?"na
 
 function RecipeGrid({recipes,onOpen,favorites,onFavorite}) {
   if (!recipes.length) return <div className="empty">No recipes found yet.</div>;
-  return <div className="recipe-grid">{recipes.map(r=><article className="recipe-card-tile" key={r.id}><button className="tile-image" style={{backgroundImage:`linear-gradient(0deg,rgba(0,0,0,.65),transparent 60%),url(${r.image || getAutomaticRecipeImage(r.title, r.ingredients || [])})`}} onClick={()=>onOpen(r.id)}><span className="tile-time">{r.time} min</span><span className="tile-title">{r.title}</span></button><div className="tile-meta"><div><span>{r.difficulty}</span></div><button onClick={()=>onFavorite(r.id)} className="heart">{favorites.includes(r.id)?"♥":"♡"}</button></div></article>)}</div>;
+  return <div className="recipe-grid">{recipes.map(r=><article className="recipe-card-tile" key={r.id}>
+    <button className="tile-image" onClick={()=>onOpen(r.id)}>
+      <img src={r.image || getAutomaticRecipeImage(r.title, r.ingredients || [])} alt={r.title} loading="lazy"
+        onError={e=>{
+          const fallback=getAutomaticRecipeImage(r.title,r.ingredients||[]);
+          if(e.currentTarget.dataset.fallback!=="1" && e.currentTarget.src!==fallback){
+            e.currentTarget.dataset.fallback="1";
+            e.currentTarget.src=fallback;
+          } else {
+            e.currentTarget.style.display="none";
+            e.currentTarget.parentElement.classList.add("image-fallback");
+          }
+        }} />
+      <span className="tile-image-shade" />
+      <span className="tile-time">{r.time} min</span>
+      <span className="tile-title">{r.title}</span>
+    </button>
+    <div className="tile-meta"><div><span>{r.difficulty}</span></div><button onClick={()=>onFavorite(r.id)} className="heart">{favorites.includes(r.id)?"♥":"♡"}</button></div>
+  </article>)}</div>;
 }
 
 export default App;
