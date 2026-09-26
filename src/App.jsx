@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 
 
 const starterRecipes = [
@@ -108,6 +108,30 @@ const starterRecipes = [
   { id: "r56", title: "BBQ Chicken Flatbread", category: "Dinner", time: 25, difficulty: "Easy", servings: 2, story: "The story of BBQ Chicken Flatbread started with a home cook looking for a meal that felt special without being complicated. It became a repeat favorite because the ingredients are familiar, the process is approachable, and the finished dish is worth gathering around the table for. This Flavorlyst version keeps that easygoing spirit.", author: "Flavorlyst Kitchen", image: "https://images.unsplash.com/photo-1521305916504-9b4d3f9c7a43?auto=format&fit=crop&w=1200&q=85", description: "A fresh, satisfying idea that is easy to make and fun to share.", tags: ["dinner","bbq","flavorlyst"], ingredients: [{"q":1,"u":"can","n":"chickpeas"},{"q":1,"u":"cup","n":"coconut milk"},{"q":1,"u":"cup","n":"tomato sauce"},{"q":1,"u":"cup","n":"spinach"},{"q":1,"u":"tbsp","n":"curry powder"}], steps: ["Prepare and season the ingredients.","Cook everything until tender, golden, or fully cooked.","Combine the finished ingredients and serve warm."] },
 ];
 
+const recipeImageChoices = [
+  { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
+  { words: /chicken|turkey|beef|steak|pork|sausage|burger|meat/i, image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85" },
+  { words: /salmon|tuna|shrimp|fish|seafood/i, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85" },
+  { words: /salad|vegetable|veggie|greens|avocado/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
+  { words: /soup|stew|chili/i, image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85" },
+  { words: /pancake|waffle|french toast|oatmeal|breakfast|toast|egg/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" },
+  { words: /cake|cookie|brownie|muffin|dessert|chocolate/i, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=85" },
+  { words: /rice|curry|taco|burrito|enchilada|teriyaki/i, image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85" }
+];
+
+const getAutomaticRecipeImage = (title, ingredients = []) => {
+  const searchText = ((title || "") + " " + ingredients.map(i => i.n || "").join(" ")).toLowerCase();
+  const match = recipeImageChoices.find(choice => choice.words.test(searchText));
+  return match?.image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85";
+};
+
+const addMissingRecipeImages = list => Array.isArray(list)
+  ? list.map(recipe => recipe?.image ? recipe : {
+      ...recipe,
+      image: getAutomaticRecipeImage(recipe?.title || "", recipe?.ingredients || [])
+    })
+  : list;
+
 const initialPlanner = {
   Monday: "r1", Tuesday: "r2", Wednesday: null, Thursday: "r4", Friday: null, Saturday: "r6", Sunday: null
 };
@@ -118,7 +142,7 @@ function load(key, fallback) {
 function save(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
 
 function App() {
-  const [recipes, setRecipes] = useState(() => load("recipe-recipes", starterRecipes));
+  const [recipes, setRecipes] = useState(() => addMissingRecipeImages(load("recipe-recipes", starterRecipes)));
   const [favorites, setFavorites] = useState(() => load("recipe-favorites", ["r1","r5"]));
   const [planner, setPlanner] = useState(() => load("recipe-planner", initialPlanner));
   const [view, setView] = useState("home");
@@ -135,6 +159,16 @@ function App() {
   const [darkMode, setDarkMode] = useState(() => load("flavorlyst-dark-mode", false));
   const [newRecipe, setNewRecipe] = useState({title:"",description:"",category:"Dinner",time:30,servings:2,image:"",ingredients:"",steps:""});
   const [aiStatus, setAiStatus] = useState("");
+
+  useEffect(() => {
+    const current = load("recipe-recipes", starterRecipes);
+    const upgraded = addMissingRecipeImages(current);
+    if (JSON.stringify(upgraded) !== JSON.stringify(current)) {
+      save("recipe-recipes", upgraded);
+      setRecipes(upgraded);
+    }
+  }, []);
+
   
   const categories = ["All","Breakfast","Lunch","Dinner"];
   const filtered = useMemo(() => {
@@ -211,23 +245,6 @@ function App() {
   const buildRecipeStory = (title, category) => {
     const meal = category === "Breakfast" ? "morning" : category === "Lunch" ? "midday" : "dinner";
     return `This Flavorlyst recipe, ${title}, was made for a ${meal} when you want something delicious without overcomplicating the kitchen. It brings familiar ingredients together in a simple way that is easy to make, share, and remember.`;
-  };
-
-  const recipeImageChoices = [
-    { words: /pasta|noodle|spaghetti|lasagna|ziti|gnocchi/i, image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85" },
-    { words: /chicken|turkey|beef|steak|pork|sausage|burger|meat/i, image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?auto=format&fit=crop&w=1200&q=85" },
-    { words: /salmon|tuna|shrimp|fish|seafood/i, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1200&q=85" },
-    { words: /salad|vegetable|veggie|greens|avocado/i, image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85" },
-    { words: /soup|stew|chili/i, image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1200&q=85" },
-    { words: /pancake|waffle|french toast|oatmeal|breakfast|toast|egg/i, image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85" },
-    { words: /cake|cookie|brownie|muffin|dessert|chocolate/i, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=85" },
-    { words: /rice|curry|taco|burrito|enchilada|teriyaki/i, image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1200&q=85" }
-  ];
-
-  const getAutomaticRecipeImage = (title, ingredients) => {
-    const searchText = (title + " " + ingredients.map(i => i.n).join(" ")).toLowerCase();
-    const match = recipeImageChoices.find(choice => choice.words.test(searchText));
-    return match?.image || "https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=1200&q=85";
   };
 
   const isAppropriateRecipeImageUrl = value => {
