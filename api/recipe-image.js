@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     const ingredientNames = ingredients.slice(0, 8).map(i => i.n).filter(Boolean).join(", ");
     const query = encodeURIComponent(`${title || "food"} ${category || ""} ${ingredientNames} recipe food`.trim());
 
-    const response = await fetch(`https://api.openverse.org/v1/images/?q=${query}&page_size=10&license_type=commercial`, {
+    const response = await fetch(`https://api.openverse.org/v1/images/?q=${query}&page_size=3&license_type=commercial`, {
       headers: { "Accept": "application/json" }
     });
 
